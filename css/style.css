@@ -1,0 +1,1568 @@
+/* =========================================================
+   LANDING PAGE PARA PSICÓLOGOS CLÍNICOS
+   Tema: Noturno Elegante (Dark Luxe & Ouro Champagne)
+   Design: Tipografia clássica, acessibilidade WCAG AAA,
+           microinterações táteis e alta conversão ética.
+   ========================================================= */
+
+:root{
+  --bg:#13171B; --surface:#1B2126; --soft:#222A30; --line:#2B343B;
+  --text:#ECEEEB; --muted:#A7B0AD; --step-text:#B7BFBC;
+  --accent:#D0AF76; --on-accent:#15130F;
+  --eyebrow:#D0AF76; --eyebrow-soft:#D0AF76; --em-color:var(--text); --em-style:normal;
+  --pill-bg:#222A30; --pill-fg:#D0AF76;
+  --item-bg:#13171B; --item-line:#2B343B; --icon-bg:#222A30; --photo-bg:#1B2126; --dash:#4A545C;
+  --band:#D0AF76; --band-text:#15130F; --band-muted:#3A3224; --band-btn-bg:#15130F; --band-btn-fg:#D0AF76;
+  --footer:#0E1114; --footer-line:#2B343B; --footer-text:#A7B0AD; --footer-strong:#ECEEEB;
+  --map-bg:#1F262C; --map-park:#252E35; --map-street:#323C45; --map-main:#3D4954; --pin-dot:#13171B; --chip-bg:#1B2126;
+  --shadow:rgba(0,0,0,.4);
+  --font-display:'Cormorant Garamond', Georgia, serif; --font-body:'Manrope', system-ui, sans-serif;
+  --display-weight:600; --ds:1.22; --tracking:0;
+  --r-btn:999px; --r-card:20px; --r-photo:28px; --r-icon:50%;
+  --wa:#25D366;
+  color-scheme:dark;
+}
+
+/* =========================================================
+   BASE — tudo abaixo usa apenas as variáveis dos temas
+   ========================================================= */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); font-size:17px; line-height:1.6;
+  overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:998;
+  opacity:0.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+h1,h2,h3{font-family:var(--font-display);font-weight:var(--display-weight);margin:0;text-wrap:balance;letter-spacing:var(--tracking)}
+p{margin:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Transição cinematográfica suave entre temas */
+body, .site-header, .section, .card, .feature, .step, .faq, .btn, .pill, .icon, .num, .band, .footer, .hero-badge, .map, .map-chip, .ident-card, .metrics-bar, .section-quote, .hero-status-pill, .back-to-top, .modality-box, .modality-tab, .modality-item, .relato-card, .cookie-banner {
+  transition: background-color .4s ease, color .4s ease, border-color .4s ease, box-shadow .4s ease;
+}
+
+/* =========================================================
+   MICRO-ANIMAÇÕES DE SCROLL (Scroll Reveal suave)
+   ========================================================= */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .65s cubic-bezier(0.16, 1, 0.3, 1), transform .65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change:opacity, transform;
+}
+.reveal.revealed{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Efeito cascata suave para cards, diferenciais e passos */
+.cards .reveal:nth-child(1), .steps .reveal:nth-child(1), .features .reveal:nth-child(1), .ident-grid .reveal:nth-child(1), .gallery-grid .reveal:nth-child(1), .relatos-grid .reveal:nth-child(1){transition-delay:.04s}
+.cards .reveal:nth-child(2), .steps .reveal:nth-child(2), .features .reveal:nth-child(2), .ident-grid .reveal:nth-child(2), .gallery-grid .reveal:nth-child(2), .relatos-grid .reveal:nth-child(2){transition-delay:.12s}
+.cards .reveal:nth-child(3), .steps .reveal:nth-child(3), .features .reveal:nth-child(3), .ident-grid .reveal:nth-child(3), .gallery-grid .reveal:nth-child(3), .relatos-grid .reveal:nth-child(3){transition-delay:.20s}
+.cards .reveal:nth-child(4), .ident-grid .reveal:nth-child(4){transition-delay:.28s}
+.cards .reveal:nth-child(5){transition-delay:.36s}
+.cards .reveal:nth-child(6){transition-delay:.44s}
+
+.wrap{
+  max-width:1160px; margin:0 auto;
+  padding-left:max(24px, env(safe-area-inset-left,0px));
+  padding-right:max(24px, env(safe-area-inset-right,0px));
+}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Botões Modernos com Efeito Shimmer ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:54px;padding:0 26px;border-radius:var(--r-btn);
+  font-family:var(--font-body);font-weight:600;font-size:17px;text-decoration:none;
+  border:1.5px solid transparent;position:relative;
+  transition:transform .2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .25s ease, filter .2s ease, background-color .35s ease;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.btn:active{transform:scale(0.98)}
+.btn-primary{
+  background:var(--accent);color:var(--on-accent);
+  box-shadow:0 4px 16px var(--shadow);
+  overflow:hidden;
+}
+.btn-primary::after{
+  content:'';position:absolute;top:-60%;left:-80%;width:45%;height:220%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transform:rotate(25deg);pointer-events:none;
+  animation:btnShimmer 4.8s ease-in-out infinite;
+}
+@keyframes btnShimmer{
+  0%{ left:-80%; }
+  20%{ left:140%; }
+  100%{ left:140%; }
+}
+.btn-primary:hover{
+  box-shadow:0 8px 24px var(--shadow), 0 0 16px var(--accent);
+}
+.btn-outline{border-color:var(--text);color:var(--text)}
+.btn-outline:hover{background:var(--soft);border-color:var(--accent);color:var(--accent)}
+.btn-sm{min-height:44px;padding:0 20px;font-size:15px;gap:8px}
+.btn-md{min-height:48px;padding:0 22px;font-size:16px}
+.btn-band{background:var(--band-btn-bg);color:var(--band-btn-fg)}
+
+/* ---------- Cabeçalho ---------- */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .35s ease}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:14px;position:relative}
+.brand{display:flex;flex-direction:column;text-decoration:none;color:var(--text)}
+.brand-name{font-family:var(--font-display);font-weight:var(--display-weight);font-size:calc(22px * var(--ds));line-height:1.2}
+.brand-sub{font-size:13px;color:var(--muted)}
+.navlinks{display:flex;gap:28px;font-size:15px;font-weight:500}
+.navlinks a{color:var(--text);text-decoration:none;transition:color .2s ease}
+.navlinks a:hover{color:var(--accent)}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.nav-cta-mobile{display:none}
+.nav-toggle{
+  display:none;align-items:center;justify-content:center;
+  width:44px;height:44px;padding:0;border-radius:12px;
+  background:transparent;border:1px solid var(--line);color:var(--text);cursor:pointer;
+}
+.nav-toggle .ic-close{display:none}
+.nav-toggle[aria-expanded="true"] .ic-menu{display:none}
+.nav-toggle[aria-expanded="true"] .ic-close{display:block}
+
+/* ---------- Seções ---------- */
+.section{padding-block:88px}
+.s-surface{background:var(--surface)}
+.s-soft{background:var(--soft)}
+.eyebrow{font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--eyebrow)}
+.s-soft .eyebrow{color:var(--eyebrow-soft)}
+.title{font-size:calc(clamp(30px, 3.6vw, 42px) * var(--ds));line-height:1.15}
+.muted{color:var(--muted)}
+.head{max-width:640px;display:flex;flex-direction:column;gap:16px}
+.stack{display:flex;flex-direction:column;gap:40px}
+
+/* Hero */
+.hero{display:flex;flex-wrap:wrap;gap:56px;align-items:center;padding-block:72px 88px}
+.hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.hero-status-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 12px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--line);
+  font-size:12.5px;font-weight:500;color:var(--text);
+  box-shadow:0 2px 8px var(--shadow);width:fit-content;
+}
+.status-dot-live{
+  width:7px;height:7px;border-radius:50%;background:#25D366;
+  box-shadow:0 0 0 0 rgba(37,211,102,.7);
+  animation:statusPulse 2s infinite;flex:none;
+}
+@keyframes statusPulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.7)}
+  70%{box-shadow:0 0 0 6px rgba(37,211,102,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
+}
+.pill{align-self:flex-start;padding:6px 14px;border-radius:999px;background:var(--pill-bg);color:var(--pill-fg);font-size:14px;font-weight:600}
+.display{font-size:calc(clamp(38px, 5vw, 60px) * var(--ds));line-height:1.06}
+.display em{color:var(--em-color);font-style:var(--em-style)}
+.lead{font-size:19px;color:var(--muted);max-width:540px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.hero-media{flex:1 1 380px;min-width:0}
+
+.hero-photo-wrap{
+  position:relative;
+  max-width:min(440px, 100%);
+  margin:0 auto;
+}
+.photo{
+  display:block;
+  width:100%;
+  aspect-ratio:4/5;
+  border-radius:var(--r-photo);
+  background:var(--photo-bg);
+  object-fit:cover;
+  object-position:center top;
+  border:1px solid var(--line);
+  box-shadow:0 20px 48px var(--shadow);
+  transition:border-radius .35s ease, border-color .35s ease;
+}
+
+/* Cards flutuantes de confiança no Hero */
+.hero-badge{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 16px;
+  border-radius:18px;
+  background:var(--surface);
+  color:var(--text);
+  border:1px solid var(--line);
+  box-shadow:0 12px 30px var(--shadow);
+  backdrop-filter:blur(10px);
+  z-index:3;
+  animation:badgeFloat 4.5s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.badge-top{
+  top:28px;
+  left:-22px;
+}
+.badge-bottom{
+  bottom:30px;
+  right:-20px;
+  animation-delay:-2.25s;
+}
+.badge-icon{
+  width:38px;
+  height:38px;
+  flex:none;
+  border-radius:12px;
+  background:var(--soft);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.badge-icon .ic{width:20px;height:20px}
+.badge-text{display:flex;flex-direction:column;line-height:1.2}
+.badge-text strong{font-size:13.5px;font-weight:600}
+.badge-text span{font-size:11.5px;color:var(--muted)}
+
+@keyframes badgeFloat{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-8px)}
+}
+
+/* Identificação (Dores e Vivências) */
+.ident-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:20px}
+.ident-card{
+  padding:28px 24px;border-radius:var(--r-card);background:var(--surface);
+  border:1px solid var(--line);display:flex;flex-direction:column;gap:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 4px 18px var(--shadow);
+  transition:transform .28s cubic-bezier(0.16, 1, 0.3, 1), border-color .25s ease, box-shadow .28s ease;
+}
+.ident-card:hover{
+  transform:translateY(-3px);border-color:var(--accent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 28px var(--shadow);
+}
+.ident-num{
+  font-family:var(--font-display);font-size:26px;font-weight:var(--display-weight);
+  color:var(--accent);opacity:.85;line-height:1;margin-bottom:2px;
+}
+.ident-card-body{display:flex;flex-direction:column;gap:8px}
+.ident-card h3{font-size:calc(19.5px * var(--ds));line-height:1.25}
+.ident-card p{font-size:15px;line-height:1.5;color:var(--muted)}
+.ident-footer{
+  text-align:center;padding:18px 26px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--line);
+  max-width:760px;margin:0 auto;font-size:16.5px;color:var(--text);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 4px 18px var(--shadow);
+}
+
+/* Sobre */
+.split{display:flex;flex-wrap:wrap;gap:56px}
+.split > *{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.features{gap:16px !important}
+.feature{display:flex;gap:16px;padding:20px;border-radius:18px;background:var(--item-bg);border:1px solid var(--item-line);transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease}
+.feature:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 28px var(--shadow)}
+.feature > div{display:flex;flex-direction:column;gap:4px}
+.feature h3{font-size:calc(19px * var(--ds))}
+.feature p{font-size:15.5px;color:var(--muted)}
+
+/* Credenciais e Apresentação */
+.creds{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.cred-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 8px var(--shadow);transition:border-color .2s ease, transform .2s ease}
+.cred-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cred-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--soft);color:var(--accent);flex-shrink:0}
+.cred-item strong{display:block;font-size:14.5px;font-weight:600;color:var(--text);line-height:1.25}
+.cred-item span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+
+
+/* =========================================================
+   BENTO GRID CLÍNICO ASSIMÉTRICO (#atendimento)
+   ========================================================= */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.bento-card {
+  padding: 30px;
+  border-radius: var(--r-card, 20px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  transition: transform .25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .25s ease, border-color .25s ease;
+}
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px var(--shadow);
+  border-color: var(--accent);
+}
+.bento-card-hero {
+  grid-column: span 2;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  border-width: 1.5px;
+}
+.bento-card-focus {
+  grid-column: span 1;
+  background: var(--surface);
+}
+.bento-card:nth-child(3) {
+  grid-column: span 1;
+}
+.bento-card:nth-child(4) {
+  grid-column: span 2;
+}
+.bento-card-callout {
+  grid-column: span 3;
+  background: var(--soft);
+  border: 1px solid transparent;
+  padding: 34px;
+}
+.bento-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bento-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+.bento-badge .ic {
+  width: 13px;
+  height: 13px;
+}
+.bento-badge-accent {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.bento-badge-soft {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.bento-meta-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bento-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.bento-meta-pill .ic {
+  width: 13px;
+  height: 13px;
+  color: var(--accent);
+}
+.bento-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.bento-title {
+  font-family: var(--font-display);
+  font-size: calc(21px * var(--ds, 1));
+  font-weight: var(--display-weight, 600);
+  line-height: 1.25;
+  color: var(--text);
+}
+.bento-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.bento-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.bento-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+.bento-tag .ic {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+}
+.bento-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.bento-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.35;
+}
+.bento-checklist .ic {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.bento-bottom {
+  border-top: 1px dashed var(--line);
+  padding-top: 14px;
+  margin-top: auto;
+}
+.bento-note {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-style: italic;
+}
+.bento-callout-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.bento-callout-text {
+  flex: 1 1 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bento-callout-title {
+  font-family: var(--font-display);
+  font-size: calc(23px * var(--ds, 1));
+  font-weight: var(--display-weight, 600);
+  line-height: 1.25;
+  color: var(--text);
+}
+.bento-callout-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.bento-callout-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.bento-callout-sub {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Micro-interações táteis de clique nos controles */
+.nav-route-btn:active {
+  transform: scale(0.97) !important;
+  transition: transform .08s ease;
+}
+.icon{flex:0 0 44px;width:44px;height:44px;border-radius:var(--r-icon);background:var(--icon-bg);color:var(--accent);display:flex;align-items:center;justify-content:center}
+
+/* Cards de atendimento */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px}
+.card{padding:28px;border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:calc(21px * var(--ds))}
+.card p{font-size:15.5px;color:var(--muted)}
+
+/* Como funciona (é uma sequência real, por isso os números) */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:24px}
+.step{
+  padding:32px 28px;
+  border-radius:var(--r-card);
+  background:var(--surface);
+  border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 4px 20px var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  position:relative;
+  transition:transform .28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .28s ease, border-color .25s ease;
+}
+.step:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 14px 32px var(--shadow);
+}
+.step h3{font-size:calc(20px * var(--ds));line-height:1.25}
+.step p{font-size:15px;line-height:1.5;color:var(--step-text)}
+.num{
+  width:46px;height:46px;border-radius:var(--r-icon);background:var(--accent);color:var(--on-accent);
+  display:flex;align-items:center;justify-content:center;font-family:var(--font-display);
+  font-weight:var(--display-weight);font-size:calc(20px * var(--ds));box-shadow:0 4px 12px var(--shadow);
+  flex-shrink:0;
+}
+
+/* FAQ */
+.faq-wrap{display:flex;flex-wrap:wrap;gap:48px}
+.faq-head{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.faq-list{flex:2 1 520px;min-width:0;display:flex;flex-direction:column}
+.faq{border-bottom:1px solid var(--line);padding-block:16px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px;font-weight:600;font-size:18px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ic{color:var(--accent);transition:transform .2s ease}
+.faq[open] summary .ic{transform:rotate(45deg)}
+.faq p{margin-top:8px;color:var(--muted)}
+
+/* Localização */
+.loc{display:flex;flex-wrap:wrap;gap:48px;align-items:center}
+.loc-info{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.info{display:flex;gap:14px;align-items:flex-start}
+.info .ic{color:var(--accent);width:22px;height:22px;margin-top:3px}
+.info strong{display:block;font-weight:600}
+
+/* Hub de Rotas (Google Maps, Waze, Uber e vCard) */
+.nav-routes-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:12px;
+  margin-top:8px;
+}
+.nav-route-btn{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:var(--r-card, 14px);
+  text-decoration:none;
+  color:var(--text);
+  font-family:var(--font-body);
+  transition:all .2s ease;
+  cursor:pointer;
+  box-shadow:0 2px 8px var(--shadow, rgba(0,0,0,0.03));
+}
+.nav-route-btn:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent);
+  box-shadow:0 6px 16px var(--shadow, rgba(0,0,0,0.08));
+}
+.route-icon-wrap{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--soft);
+  color:var(--accent);
+  flex-shrink:0;
+  transition:background .2s ease, color .2s ease;
+}
+.nav-route-btn:hover .route-icon-wrap{
+  background:var(--accent);
+  color:var(--on-accent, #fff);
+}
+.route-icon-wrap .ic{
+  width:18px;
+  height:18px;
+}
+.route-btn-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.2;
+}
+.route-btn-text strong{
+  font-size:13.5px;
+  color:var(--text);
+  font-weight:600;
+}
+.route-btn-text small{
+  font-size:11.5px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* Facilidades do Consultório */
+.loc-amenities{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:12px;
+  margin-top:10px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.loc-amenity{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.loc-amenity-icon{
+  font-size:18px;
+  line-height:1;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.loc-amenity-text{
+  display:flex;
+  flex-direction:column;
+}
+.loc-amenity-text strong{
+  font-size:12.5px;
+  color:var(--text);
+  font-weight:600;
+  line-height:1.2;
+}
+.loc-amenity-text small{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.25;
+  margin-top:2px;
+}
+.loc-map{flex:1.4 1 460px;min-width:0}
+.map{display:block;position:relative;width:100%;min-width:280px;height:440px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);text-decoration:none;color:var(--text)}
+.map svg.streets{position:absolute;inset:0;width:100%;height:100%}
+.m-bg{fill:var(--map-bg)} .m-park{fill:var(--map-park)}
+.m-st{stroke:var(--map-street);fill:none} .m-main{stroke:var(--map-main);fill:none}
+.pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);width:56px;height:56px}
+.pin-body{fill:var(--accent)} .pin-dot{fill:var(--pin-dot)}
+.map-chip{position:absolute;left:20px;bottom:20px;right:20px;max-width:340px;padding:14px 18px;border-radius:16px;background:var(--chip-bg);border:1px solid var(--line);box-shadow:0 8px 24px var(--shadow);display:flex;flex-direction:column}
+.map-chip span{font-size:14px;color:var(--muted)}
+.map-embed{width:100%;height:440px;border:0;border-radius:var(--r-card)}
+
+/* Faixa de chamada */
+.band{background:var(--band);color:var(--band-text)}
+.band-inner{max-width:880px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.band h2{font-size:calc(clamp(30px, 3.6vw, 44px) * var(--ds));line-height:1.12;color:var(--band-text)}
+.band p{color:var(--band-muted);max-width:560px}
+
+/* Rodapé */
+.footer{background:var(--footer);color:var(--footer-text);border-top:1px solid var(--footer-line)}
+.footer-inner{display:flex;flex-wrap:wrap;gap:16px 40px;justify-content:space-between;font-size:14px;padding-block:32px calc(32px + 80px)}
+.footer-col{display:flex;flex-direction:column;gap:2px}
+.footer strong{color:var(--footer-strong);font-weight:600}
+.footer-brand{display:flex;flex-direction:column;gap:4px;flex:1 1 300px}
+.footer-links{display:flex;flex-wrap:wrap;gap:14px 24px;font-size:14px;flex:1 1 380px}
+.footer-links a{color:var(--footer-text);text-decoration:none;transition:color .2s ease}
+.footer-links a:hover{color:var(--accent)}
+.footer-bottom{width:100%;padding-top:16px;border-top:1px solid var(--footer-line);font-size:12.5px;color:var(--footer-text);opacity:0.85;display:flex;flex-direction:column;gap:4px}
+
+/* Botão flutuante do WhatsApp com Balão Inteligente */
+.wa-wrapper{
+  position:fixed;z-index:25;
+  right:calc(20px + env(safe-area-inset-right,0px));
+  bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;align-items:flex-end;
+}
+.wa-float{
+  width:60px;height:60px;border-radius:50%;background:var(--wa);color:#FFFFFF;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  text-decoration:none;transition:transform .2s ease, filter .2s ease;
+}
+.wa-float:hover{transform:scale(1.06);filter:brightness(1.08)}
+.wa-float .ic{width:28px;height:28px}
+
+.wa-bubble{
+  position:absolute;bottom:calc(100% + 14px);right:0;
+  width:260px;max-width:calc(100vw - 40px);
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 12px 32px var(--shadow);
+  padding:14px 16px;
+  opacity:0;transform:translateY(10px) scale(0.95);
+  pointer-events:none;
+  transition:opacity .3s ease, transform .3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter:blur(10px);
+}
+.wa-bubble::after{
+  content:"";position:absolute;bottom:-6px;right:24px;
+  width:12px;height:12px;background:var(--surface);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.wa-bubble.show{
+  opacity:1;transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+.wa-bubble-close{
+  position:absolute;top:6px;right:8px;
+  width:22px;height:22px;border:none;background:transparent;
+  color:var(--muted);font-size:18px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:color .15s;
+}
+.wa-bubble-close:hover{color:var(--text)}
+.wa-bubble-content{
+  text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px;
+}
+.wa-online-tag{
+  font-size:11.5px;font-weight:600;color:var(--wa);
+  display:flex;align-items:center;gap:6px;
+}
+.wa-dot-live{
+  width:7px;height:7px;border-radius:50%;background:#25D366;
+  box-shadow:0 0 0 0 rgba(37,211,102,.7);
+  animation:waPulse 2s infinite;
+}
+@keyframes waPulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.7)}
+  70%{box-shadow:0 0 0 6px rgba(37,211,102,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
+}
+.wa-bubble-content p{
+  font-size:13.5px;line-height:1.35;margin:0;color:var(--text);font-weight:500;
+}
+
+/* =========================================================
+   FAIXA DE MÉTRICAS E TRAJETÓRIA CLÍNICA (Ética CFP)
+   ========================================================= */
+.metrics-bar{
+  background:var(--surface);
+  border-block:1px solid var(--line);
+  padding:36px 0;
+}
+.metrics-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:24px;
+}
+.metric-item{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex:1 1 200px;
+  text-align:center;
+}
+.metric-num{
+  font-family:var(--font-display);
+  font-size:calc(38px * var(--ds));
+  font-weight:var(--display-weight);
+  color:var(--accent);
+  line-height:1.1;
+  letter-spacing:var(--tracking);
+}
+.metric-label{
+  font-size:13.5px;
+  color:var(--muted);
+  max-width:180px;
+  margin:0 auto;
+  line-height:1.35;
+}
+.metric-divider{
+  width:1px;
+  height:44px;
+  background:var(--line);
+  display:block;
+}
+
+/* =========================================================
+   CITAÇÃO REFLEXIVA EDITORIAL
+   ========================================================= */
+.section-quote{
+  padding:72px 0;
+  background:var(--bg);
+  border-block:1px solid var(--line);
+}
+.quote-inner{
+  max-width:840px;
+  margin:0 auto;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+}
+.quote-mark{
+  width:36px;
+  height:36px;
+  color:var(--accent);
+  opacity:.5;
+}
+.quote-text{
+  font-family:var(--font-display);
+  font-size:calc(clamp(22px, 3.2vw, 32px) * var(--ds));
+  font-style:italic;
+  line-height:1.4;
+  color:var(--text);
+  margin:0;
+  text-wrap:balance;
+}
+.quote-author{
+  font-size:13.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-style:normal;
+  font-weight:600;
+}
+
+/* =========================================================
+   ALTERNADOR DE MODALIDADES (Presencial vs Online)
+   ========================================================= */
+.modality-box{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:32px;
+  box-shadow:0 8px 30px var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  margin-top:12px;
+}
+.modality-nav{
+  display:inline-flex;
+  gap:8px;
+  padding:6px;
+  border-radius:999px;
+  background:var(--soft);
+  align-self:center;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.modality-tab{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  font-weight:600;
+  font-size:14.5px;
+  cursor:pointer;
+  transition:background-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.modality-tab.active{
+  background:var(--surface);
+  color:var(--text);
+  box-shadow:0 2px 10px var(--shadow);
+}
+.modality-tab .ic{
+  width:18px;
+  height:18px;
+  color:var(--accent);
+}
+.modality-content{
+  display:none;
+  animation:fadeInModality .3s ease;
+}
+.modality-content.active{
+  display:block;
+}
+.modality-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
+  gap:20px;
+}
+.modality-item{
+  background:var(--item-bg);
+  border:1px solid var(--item-line);
+  padding:22px;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.modality-item strong{
+  font-size:16px;
+  color:var(--text);
+}
+.modality-item p{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.45;
+}
+@keyframes fadeInModality{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* =========================================================
+   RELATOS ÉTICOS DA JORNADA CLÍNICA (CFP)
+   ========================================================= */
+.relatos-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));
+  gap:24px;
+}
+.relato-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-card);
+  padding:32px 28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:20px;
+  position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 6px 22px var(--shadow);
+  transition:transform .28s cubic-bezier(0.16, 1, 0.3, 1), border-color .25s ease, box-shadow .28s ease;
+}
+.relato-card::before{
+  content:"“";
+  position:absolute;
+  top:12px;
+  right:22px;
+  font-family:var(--font-display);
+  font-size:72px;
+  line-height:1;
+  color:var(--accent);
+  opacity:0.14;
+  pointer-events:none;
+}
+.relato-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.9), 0 14px 34px var(--shadow);
+}
+.relato-stars{
+  color:var(--accent);
+  font-size:16px;
+  letter-spacing:2px;
+}
+.relato-text{
+  font-size:15px;
+  line-height:1.6;
+  color:var(--text);
+  margin:0;
+  font-style:italic;
+  position:relative;
+  z-index:2;
+}
+.relato-author{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+.relato-author cite{
+  font-style:normal;
+}
+.relato-author strong{
+  font-size:13.5px;
+  color:var(--text);
+  font-weight:600;
+}
+.relato-author span{
+  font-size:12px;
+  color:var(--muted);
+}
+address.loc-address-box{
+  font-style:normal;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+address.footer-contact-col{
+  font-style:normal;
+}
+
+/* =========================================================
+   BOTÃO VOLTAR AO TOPO (Smooth Scroll)
+   ========================================================= */
+.back-to-top{
+  position:fixed;
+  right:calc(24px + env(safe-area-inset-right,0px));
+  bottom:calc(92px + env(safe-area-inset-bottom,0px));
+  z-index:24;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--text);
+  box-shadow:0 4px 14px var(--shadow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(12px);
+  transition:opacity .25s ease, transform .25s ease, visibility .25s ease, background-color .35s ease, border-color .35s ease, color .2s ease;
+}
+.back-to-top.show{
+  opacity:.85;
+  visibility:visible;
+  transform:translateY(0);
+}
+.back-to-top:hover{
+  opacity:1;
+  transform:translateY(-3px);
+  border-color:var(--accent);
+  color:var(--accent);
+  box-shadow:0 6px 18px var(--shadow);
+}
+
+/* =========================================================
+   BANNER DE CONSENTIMENTO LGPD & PRIVACIDADE (Flutuante Fixo)
+   ========================================================= */
+.cookie-banner{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:95;
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  padding:14px 0;
+  box-shadow:0 -6px 24px var(--shadow);
+  transform:translateY(100%);
+  opacity:0;
+  visibility:hidden;
+  transition:transform .35s cubic-bezier(0.16, 1, 0.3, 1), opacity .35s ease, visibility .35s ease;
+}
+.cookie-banner.show{
+  transform:translateY(0);
+  opacity:1;
+  visibility:visible;
+}
+.cookie-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.cookie-text{
+  font-size:13.5px;
+  color:var(--muted);
+  line-height:1.45;
+  flex:1 1 320px;
+  margin:0;
+}
+.cookie-text a{
+  color:var(--accent);
+  font-weight:600;
+  text-decoration:underline;
+}
+.cookie-accept{
+  padding:8px 22px;
+  min-height:38px;
+  font-size:13.5px;
+  flex-shrink:0;
+}
+
+/* ---------- Celular & Menu Mobile Responsivo ---------- */
+@media (max-width:760px){
+  .wrap{
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+
+  /* Cabeçalho fiel ao modelo de referência (2 linhas elegantes para o nome) */
+  .site-header{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line)}
+  .nav{padding-block:12px;gap:8px;align-items:center;justify-content:space-between}
+  .brand{flex:0 0 auto;max-width:145px;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .brand-name{
+    font-family:var(--font-display);
+    font-size:17px;
+    font-weight:var(--display-weight, 600);
+    line-height:1.1;
+    letter-spacing:var(--tracking, -0.01em);
+  }
+  .brand-sub{
+    font-size:10px;
+    line-height:1.2;
+    color:var(--muted);
+  }
+  .nav-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .nav-cta{display:none}
+  .nav-cta-mobile{
+    display:inline-flex;align-items:center;justify-content:center;gap:4px;
+    min-height:34px;padding:0 10px;font-size:12px;font-weight:600;
+    border-radius:999px;flex-shrink:0;
+  }
+  .nav-cta-mobile .ic{width:13px;height:13px}
+  .nav-toggle{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:34px;height:34px;padding:0;border-radius:8px;flex-shrink:0;
+    background:transparent;border:1px solid var(--line);color:var(--text);cursor:pointer;
+  }
+  .nav-toggle .ic{width:16px;height:16px}
+  .navlinks{
+    display:none;position:absolute;top:100%;left:0;right:0;
+    flex-direction:column;gap:0;background:var(--surface);
+    border:1px solid var(--line);border-radius:16px;
+    padding:10px;margin-top:8px;box-shadow:0 12px 30px var(--shadow);
+  }
+  .navlinks.open{display:flex}
+  .navlinks a{padding:12px 16px;border-radius:10px;font-size:15px}
+  .navlinks a:hover{background:var(--soft)}
+
+  /* Hero Mobile: foto de demonstração imediatamente abaixo do cabeçalho */
+  .hero{padding-block:16px 40px;gap:28px}
+  .hero-media{order:-1;width:100%}
+  .hero-photo-wrap{
+    max-width:min(320px, 86vw);
+    margin:0 auto;
+    position:relative;
+  }
+  .hero-img{
+    width:100%;
+    height:auto;
+    border-radius:var(--r-photo, 28px);
+    display:block;
+  }
+  .badge-top{
+    top:12px;left:8px;
+    padding:8px 12px;
+    max-width:calc(100% - 16px);
+    box-shadow:0 8px 24px var(--shadow);
+  }
+  .badge-bottom{
+    bottom:14px;right:8px;
+    padding:8px 12px;
+    max-width:calc(100% - 16px);
+    box-shadow:0 8px 24px var(--shadow);
+  }
+  .badge-icon{width:32px;height:32px;border-radius:10px}
+  .badge-icon .ic{width:16px;height:16px}
+  .badge-text strong{font-size:12px;line-height:1.2}
+  .badge-text span{font-size:10px;line-height:1.2}
+  .hero-copy{gap:16px}
+  .hero-status-pill{font-size:11.5px;padding:4px 10px;gap:6px}
+  .pill{font-size:12px;padding:5px 11px;line-height:1.3}
+  .display{font-size:clamp(26px, 7vw, 36px);line-height:1.15}
+  .lead{font-size:15px;line-height:1.5}
+  .hero .row{flex-direction:column;width:100%;gap:10px}
+  .hero .row .btn{width:100%;justify-content:center;min-height:48px;font-size:15px}
+  .hero-tel{font-size:13px;text-align:center}
+
+  /* Seções e Tipografia */
+  .section{padding-block:48px}
+  .head{gap:12px}
+  .title{font-size:clamp(24px, 6.5vw, 32px);line-height:1.2}
+
+  /* Identificação (Dores e Vivências) */
+  .ident-grid{grid-template-columns:1fr;gap:12px}
+  .ident-card{padding:18px 16px;border-radius:16px;gap:8px}
+  .ident-card h3{font-size:16.5px}
+  .ident-card p{font-size:13.5px;line-height:1.45}
+  .ident-footer{padding:14px;font-size:13.5px;text-align:center}
+
+  /* Sobre e Diferenciais */
+  .split{gap:28px}
+  .features{gap:12px !important}
+  .feature{padding:14px;gap:12px;border-radius:14px}
+  .feature h3{font-size:16px}
+  .feature p{font-size:13.5px;line-height:1.4}
+  .feature .icon{width:38px;height:38px;min-width:38px;border-radius:10px}
+  .feature .icon .ic{width:18px;height:18px}
+
+
+  /* Faixa de Métricas (Dashboard 2x2 elegante) */
+  .metrics-bar{padding:24px 0}
+  .metrics-inner{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px 12px;
+    text-align:center;
+  }
+  .metric-divider{display:none}
+  .metric-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    padding:14px 8px;
+    border-radius:14px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    min-width:0;
+  }
+  .metric-num{
+    font-size:clamp(24px, 6.5vw, 32px);
+    line-height:1.1;
+    font-weight:700;
+  }
+  .metric-label{
+    font-size:11.5px;
+    line-height:1.3;
+    max-width:130px;
+    margin:0 auto;
+  }
+
+  /* Bento Grid Clínico Mobile */
+  .bento-grid{grid-template-columns:1fr;gap:14px}
+  .bento-card, .bento-card-hero, .bento-card-focus, .bento-card:nth-child(4), .bento-card-callout{
+    grid-column:span 1 !important;
+    padding:22px 18px;
+    border-radius:18px;
+    gap:14px;
+  }
+  .bento-title{font-size:18px}
+  .bento-desc{font-size:14px;line-height:1.45}
+  .bento-callout-inner{flex-direction:column;align-items:stretch;gap:18px}
+  .bento-callout-title{font-size:19px}
+  .bento-callout-desc{font-size:14px}
+  .bento-callout-cta{width:100%}
+  .bento-callout-cta .btn{width:100%;justify-content:center;min-height:48px;font-size:14.5px}
+  .bento-callout-sub{width:100%;text-align:center}
+
+  /* Modalidades (Tabs) */
+  .modality-box{padding:20px 14px;border-radius:18px}
+  .modality-tabs{display:flex;width:100%;gap:6px}
+  .modality-tab{flex:1 1 0;padding:8px 8px;font-size:12px;justify-content:center;text-align:center}
+  .modality-panel h3{font-size:17.5px}
+  .modality-panel ul li{font-size:13.5px;gap:8px}
+
+  /* Passos, Depoimentos, Dúvidas */
+  .steps{grid-template-columns:1fr;gap:12px}
+  .step-card{padding:18px 14px;border-radius:16px}
+  .gallery-grid{grid-template-columns:1fr;gap:12px}
+  .gallery-item{height:200px;border-radius:14px}
+  .relatos-grid{grid-template-columns:1fr;gap:12px}
+  .relato-card{padding:18px 14px;border-radius:16px}
+  .faq-question{padding:14px 12px;font-size:14.5px}
+  .faq-answer{padding:0 12px 14px;font-size:13.5px}
+
+  /* Localização & Rotas 1-Clique */
+  .nav-routes-grid{grid-template-columns:1fr;gap:8px}
+  .nav-route-btn{width:100%;min-height:44px;font-size:13px;justify-content:flex-start;padding:0 12px}
+  .loc-amenities{grid-template-columns:1fr;gap:8px}
+  .amenity-item{padding:10px 12px;font-size:12.5px}
+  .section-quote{padding:40px 0}
+  .map{height:280px;border-radius:16px}
+
+  /* Botões Flutuantes e Controles */
+  .back-to-top{right:12px;bottom:72px;width:36px;height:36px}
+  .wa-wrapper{right:12px;bottom:12px}
+  .wa-float{width:50px;height:50px}
+  .wa-float .ic{width:24px;height:24px}
+  .wa-bubble{width:calc(100vw - 28px);max-width:280px;bottom:calc(100% + 10px);right:0;font-size:12.5px;padding:12px}
+
+  /* Banner de Privacidade LGPD Mobile */
+  .cookie-banner{padding:12px 0}
+  .cookie-inner{gap:10px;flex-direction:column;align-items:stretch;text-align:left}
+  .cookie-text{font-size:12.5px;line-height:1.4;flex:none}
+  .cookie-accept{width:100%;min-height:38px;justify-content:center}
+}
+
+/* Telas Ultra Pequenas (Galaxy A55, 320px-360px) */
+@media (max-width:360px){
+  .wrap{padding-left:12px;padding-right:12px}
+  .brand-name{font-size:17.5px;max-width:160px}
+  .brand-sub{font-size:10px;max-width:160px}
+  .nav-cta-mobile{padding:0 10px;font-size:12px;min-height:36px}
+  .metric-num{font-size:22px}
+  .metric-label{font-size:10.5px}
+  }
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none !important;animation:none !important}
+  .reveal{opacity:1 !important;transform:none !important;transition:none !important}
+}
+
+
+/* =========================================================
+   COMPONENTE DE AGENDAMENTO NO SITE (COM WHATSAPP E E-MAIL)
+   ========================================================= */
+.booking-section {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.booking-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card, 24px);
+  padding: 36px 32px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 8px 32px var(--shadow);
+  max-width: 820px;
+  margin: 0 auto;
+}
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.booking-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.booking-label {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.booking-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.booking-options-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+}
+.booking-opt-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  text-align: left;
+  transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.booking-opt-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.booking-opt-btn.active {
+  background: var(--soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+.booking-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+}
+.booking-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.booking-input-wrap label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.booking-input {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+.booking-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--soft);
+}
+.booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+.booking-submit-btn {
+  width: 100%;
+  max-width: 480px;
+  min-height: 52px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.booking-ethics-note {
+  font-size: 12.5px;
+  color: var(--muted);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Modal de Confirmação de Agendamento */
+.booking-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.booking-modal-overlay.active {
+  display: flex;
+  animation: modalFadeIn .3s ease;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.booking-modal-card {
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  padding: 36px 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  animation: modalSlideUp .35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalSlideUp {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.booking-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto;
+}
+.booking-modal-proto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+  margin: 0 auto;
+}
+.booking-modal-title {
+  font-size: 22px;
+  color: var(--text);
+  margin: 0;
+}
+.booking-modal-desc {
+  font-size: 14.5px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+.booking-modal-summary {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.booking-modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+.booking-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+.booking-modal-close-btn:hover {
+  color: var(--text);
+  background: var(--soft);
+}
+@media (max-width: 640px) {
+  .booking-card { padding: 24px 18px; border-radius: 20px; }
+  .booking-options-row { grid-template-columns: 1fr; }
+  .booking-modal-card { padding: 28px 20px; }
+}
+
+
+/* Compensação do cabeçalho fixo ao rolar para âncoras (#) */
+section[id], article[id], div[id] {
+  scroll-margin-top: calc(76px + env(safe-area-inset-top, 0px));
+}

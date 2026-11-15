@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #4A6B57; }
+    .glyph { stroke: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1B2126; }
+      .glyph { stroke: #D0AF76; }
+    }
+  </style>
+  <rect width="64" height="64" rx="16" class="bg"/>
+  <g fill="none" class="glyph" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Haste central -->
+    <path d="M32 12 v40"/>
+    <!-- Base inferior -->
+    <path d="M24 52 h16"/>
+    <!-- Arco de acolhimento do Psi -->
+    <path d="M16 22 v10 c0 10 32 10 32 0 v-10"/>
+    <!-- Serifas elegantes -->
+    <path d="M11 22 h10"/>
+    <path d="M43 22 h10"/>
+    <path d="M26 12 h12"/>
+  </g>
+</svg>
