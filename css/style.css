@@ -52,7 +52,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* Transição cinematográfica suave entre temas */
-body, .site-header, .section, .card, .feature, .step, .faq, .btn, .pill, .icon, .num, .band, .footer, .hero-badge, .map, .map-chip, .ident-card, .metrics-bar, .section-quote, .hero-status-pill, .back-to-top, .modality-box, .modality-tab, .modality-item, .relato-card, .cookie-banner {
+body, .site-header, .section, .card, .feature, .step, .faq, .btn, .pill, .icon, .num, .band, .footer, .hero-badge, .map, .map-chip, .ident-card, .metrics-bar, .section-quote, .hero-status-pill, .back-to-top, .relato-card, .cookie-banner {
   transition: background-color .4s ease, color .4s ease, border-color .4s ease, box-shadow .4s ease;
 }
 
@@ -126,7 +126,7 @@ body, .site-header, .section, .card, .feature, .step, .faq, .btn, .pill, .icon, 
 .brand{display:flex;flex-direction:column;text-decoration:none;color:var(--text)}
 .brand-name{font-family:var(--font-display);font-weight:var(--display-weight);font-size:calc(22px * var(--ds));line-height:1.2}
 .brand-sub{font-size:13px;color:var(--muted)}
-.navlinks{display:flex;gap:28px;font-size:15px;font-weight:500}
+.navlinks{display:flex;align-items:center;gap:clamp(8px, 1.3vw, 20px);font-size:14px;font-weight:500}
 .navlinks a{color:var(--text);text-decoration:none;transition:color .2s ease}
 .navlinks a:hover{color:var(--accent)}
 .nav-actions{display:flex;align-items:center;gap:10px}
@@ -838,88 +838,6 @@ body, .site-header, .section, .card, .feature, .step, .faq, .btn, .pill, .icon, 
   font-weight:600;
 }
 
-/* =========================================================
-   ALTERNADOR DE MODALIDADES (Presencial vs Online)
-   ========================================================= */
-.modality-box{
-  background:var(--surface);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:32px;
-  box-shadow:0 8px 30px var(--shadow);
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-  margin-top:12px;
-}
-.modality-nav{
-  display:inline-flex;
-  gap:8px;
-  padding:6px;
-  border-radius:999px;
-  background:var(--soft);
-  align-self:center;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-.modality-tab{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:10px 22px;
-  border-radius:999px;
-  border:none;
-  background:transparent;
-  color:var(--muted);
-  font-weight:600;
-  font-size:14.5px;
-  cursor:pointer;
-  transition:background-color .2s ease, color .2s ease, box-shadow .2s ease;
-}
-.modality-tab.active{
-  background:var(--surface);
-  color:var(--text);
-  box-shadow:0 2px 10px var(--shadow);
-}
-.modality-tab .ic{
-  width:18px;
-  height:18px;
-  color:var(--accent);
-}
-.modality-content{
-  display:none;
-  animation:fadeInModality .3s ease;
-}
-.modality-content.active{
-  display:block;
-}
-.modality-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
-  gap:20px;
-}
-.modality-item{
-  background:var(--item-bg);
-  border:1px solid var(--item-line);
-  padding:22px;
-  border-radius:18px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.modality-item strong{
-  font-size:16px;
-  color:var(--text);
-}
-.modality-item p{
-  font-size:14px;
-  color:var(--muted);
-  line-height:1.45;
-}
-@keyframes fadeInModality{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
 
 /* =========================================================
    RELATOS ÉTICOS DA JORNADA CLÍNICA (CFP)
@@ -1088,26 +1006,21 @@ address.footer-contact-col{
   flex-shrink:0;
 }
 
-/* ---------- Celular & Menu Mobile Responsivo ---------- */
-@media (max-width:760px){
-  .wrap{
-    padding-left:max(16px, env(safe-area-inset-left,0px));
-    padding-right:max(16px, env(safe-area-inset-right,0px));
-  }
-
+/* ---------- Menu Responsivo (Smartphones, Dobráveis e Tablets) ---------- */
+@media (max-width:1040px){
   /* Cabeçalho fiel ao modelo de referência (2 linhas elegantes para o nome) */
   .site-header{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line)}
-  .nav{padding-block:12px;gap:8px;align-items:center;justify-content:space-between}
-  .brand{flex:0 0 auto;max-width:145px;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .nav{padding-block:12px;gap:8px;align-items:center;justify-content:space-between;position:relative}
+  .brand{flex:0 0 auto;max-width:180px;min-width:0;display:flex;flex-direction:column;gap:1px}
   .brand-name{
     font-family:var(--font-display);
-    font-size:17px;
+    font-size:17.5px;
     font-weight:var(--display-weight, 600);
-    line-height:1.1;
+    line-height:1.15;
     letter-spacing:var(--tracking, -0.01em);
   }
   .brand-sub{
-    font-size:10px;
+    font-size:10.5px;
     line-height:1.2;
     color:var(--muted);
   }
@@ -1115,25 +1028,34 @@ address.footer-contact-col{
   .nav-cta{display:none}
   .nav-cta-mobile{
     display:inline-flex;align-items:center;justify-content:center;gap:4px;
-    min-height:34px;padding:0 10px;font-size:12px;font-weight:600;
+    min-height:36px;padding:0 12px;font-size:12.5px;font-weight:600;
     border-radius:999px;flex-shrink:0;
   }
   .nav-cta-mobile .ic{width:13px;height:13px}
   .nav-toggle{
     display:inline-flex;align-items:center;justify-content:center;
-    width:34px;height:34px;padding:0;border-radius:8px;flex-shrink:0;
+    width:38px;height:38px;padding:0;border-radius:8px;flex-shrink:0;
     background:transparent;border:1px solid var(--line);color:var(--text);cursor:pointer;
   }
-  .nav-toggle .ic{width:16px;height:16px}
+  .nav-toggle .ic{width:18px;height:18px}
   .navlinks{
     display:none;position:absolute;top:100%;left:0;right:0;
     flex-direction:column;gap:0;background:var(--surface);
     border:1px solid var(--line);border-radius:16px;
     padding:10px;margin-top:8px;box-shadow:0 12px 30px var(--shadow);
+    z-index:50;
   }
   .navlinks.open{display:flex}
   .navlinks a{padding:12px 16px;border-radius:10px;font-size:15px}
   .navlinks a:hover{background:var(--soft)}
+}
+
+/* ---------- Layout Mobile e Tablet Vertical (<=768px) ---------- */
+@media (max-width:768px){
+  .wrap{
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
 
   /* Hero Mobile: foto de demonstração imediatamente abaixo do cabeçalho */
   .hero{padding-block:16px 40px;gap:28px}
@@ -1246,13 +1168,6 @@ address.footer-contact-col{
   .bento-callout-cta .btn{width:100%;justify-content:center;min-height:48px;font-size:14.5px}
   .bento-callout-sub{width:100%;text-align:center}
 
-  /* Modalidades (Tabs) */
-  .modality-box{padding:20px 14px;border-radius:18px}
-  .modality-tabs{display:flex;width:100%;gap:6px}
-  .modality-tab{flex:1 1 0;padding:8px 8px;font-size:12px;justify-content:center;text-align:center}
-  .modality-panel h3{font-size:17.5px}
-  .modality-panel ul li{font-size:13.5px;gap:8px}
-
   /* Passos, Depoimentos, Dúvidas */
   .steps{grid-template-columns:1fr;gap:12px}
   .step-card{padding:18px 14px;border-radius:16px}
@@ -1285,15 +1200,26 @@ address.footer-contact-col{
   .cookie-accept{width:100%;min-height:38px;justify-content:center}
 }
 
-/* Telas Ultra Pequenas (Galaxy A55, 320px-360px) */
+/* Telas Ultra Pequenas (Dell Venue Pro 320px, Galaxy A15 360px, iPhone 13 mini) */
 @media (max-width:360px){
-  .wrap{padding-left:12px;padding-right:12px}
-  .brand-name{font-size:17.5px;max-width:160px}
-  .brand-sub{font-size:10px;max-width:160px}
-  .nav-cta-mobile{padding:0 10px;font-size:12px;min-height:36px}
-  .metric-num{font-size:22px}
-  .metric-label{font-size:10.5px}
-  }
+  .wrap{padding-left:10px;padding-right:10px}
+  .brand-name{font-size:16px;max-width:140px}
+  .brand-sub{font-size:9.5px;max-width:140px}
+  .nav-cta-mobile{padding:0 8px;font-size:11.5px;min-height:34px}
+  .metric-num{font-size:20px}
+  .metric-label{font-size:10px}
+  .cal-day-cell{min-height:34px;font-size:12px;padding:2px}
+  .cal-weekdays span{font-size:10.5px}
+  .time-chip{padding:6px 4px;font-size:11.5px}
+  .booking-card{padding:18px 10px;border-radius:16px}
+  .booking-chip-btn{padding:8px 10px;font-size:12px}
+  .triagem-widget-card{padding:18px 10px;border-radius:16px}
+  .triagem-opt-btn{padding:12px 10px;gap:10px}
+  .triagem-opt-emoji{font-size:22px}
+  .voice-player-controls{padding:6px 8px;gap:8px}
+  .voice-play-btn{width:36px;height:36px;font-size:13px}
+  .voice-speed-btn{padding:3px 8px;font-size:11px}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{transition:none !important;animation:none !important}
@@ -1380,6 +1306,309 @@ address.footer-contact-col{
   color: var(--accent);
   font-weight: 600;
   box-shadow: 0 4px 14px var(--shadow);
+}
+
+/* Chips de Foco / Vivência Clínica */
+.booking-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.booking-chip-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.booking-chip-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--soft);
+}
+.booking-chip-btn.active {
+  background: var(--soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(208,175,118,0.2);
+}
+
+/* =========================================================
+   CALENDÁRIO & HORÁRIOS INTERATIVOS
+   ========================================================= */
+.booking-calendar-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+  margin-top: 6px;
+}
+.cal-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+}
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cal-month-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: capitalize;
+}
+.cal-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all .15s ease;
+}
+.cal-nav-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--soft);
+}
+.cal-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cal-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .15s ease;
+  border: 1px solid transparent;
+  color: var(--text);
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+}
+.cal-day-cell:hover:not(.disabled):not(.selected) {
+  background: var(--soft);
+  border-color: var(--accent);
+}
+.cal-day-cell.selected {
+  background: var(--accent);
+  color: var(--on-accent, #13171B);
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(208,175,118,0.4);
+}
+.cal-day-cell.today:not(.selected) {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.cal-day-cell.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: line-through;
+}
+.cal-day-cell.empty {
+  visibility: hidden;
+  pointer-events: none;
+}
+.cal-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dot-legend {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-active { background: var(--accent); }
+.dot-avail { border: 1px solid var(--accent); }
+.dot-disabled { background: var(--line); }
+
+/* Grade de Horários por Turnos */
+.slots-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+}
+.slots-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.slots-header strong {
+  font-size: 14.5px;
+  color: var(--text);
+}
+.slots-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.slots-turnos-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.turno-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.turno-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.time-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 6px;
+}
+.time-chip {
+  padding: 7px 6px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: all .15s ease;
+}
+.time-chip:hover {
+  border-color: var(--accent);
+  background: var(--soft);
+  transform: translateY(-1px);
+}
+.time-chip.active {
+  background: var(--accent);
+  color: var(--on-accent, #13171B);
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(208,175,118,0.35);
+}
+.time-chip.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
+  text-decoration: line-through;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* Callout do Lembrete de 48h */
+.reminder-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(208, 175, 118, 0.08);
+  border: 1px solid rgba(208, 175, 118, 0.25);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.reminder-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+.reminder-callout strong {
+  display: block;
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.reminder-callout p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Card Resumo em Tempo Real */
+.booking-summary-pill-card {
+  background: var(--surface);
+  border: 1.5px dashed var(--accent);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-top: 8px;
+}
+.summary-pill-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.summary-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: pulseDot 2s infinite;
+}
+.summary-pill-content {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.45;
 }
 .booking-inputs-grid {
   display: grid;
@@ -1523,20 +1752,93 @@ address.footer-contact-col{
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 14px 18px;
+  padding: 16px 18px;
   text-align: left;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+}
+.modal-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+.modal-summary-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.modal-reminder-badge-row {
+  background: rgba(208, 175, 118, 0.08);
+  border: 1px solid rgba(208, 175, 118, 0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 12.5px;
 }
 .booking-modal-actions {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 10px;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 8px;
+}
+.booking-modal-actions .btn {
+  width: 100%;
   justify-content: center;
-  margin-top: 6px;
+}
+.btn-gcal {
+  background: #1a73e8;
+  color: #ffffff !important;
+  border: 1px solid #1a73e8;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-gcal:hover {
+  background: #1557b0;
+  border-color: #1557b0;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5);
+}
+.btn-ics-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  font-size: 13.5px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm, 10px);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.btn-ics-secondary:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: var(--soft);
+}
+.modal-gcal-link {
+  color: var(--accent);
+  font-size: 12.5px;
+  text-decoration: underline;
+  margin-top: 4px;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+.modal-gcal-link:hover {
+  filter: brightness(1.15);
 }
 .booking-modal-close-btn {
   position: absolute;
@@ -1555,12 +1857,523 @@ address.footer-contact-col{
   color: var(--text);
   background: var(--soft);
 }
-@media (max-width: 640px) {
-  .booking-card { padding: 24px 18px; border-radius: 20px; }
+@media (max-width: 920px) {
+  .booking-calendar-wrapper { grid-template-columns: 1fr; gap: 16px; }
+  .booking-card { padding: 24px 16px; border-radius: 20px; }
   .booking-options-row { grid-template-columns: 1fr; }
-  .booking-modal-card { padding: 28px 20px; }
+  .booking-modal-card { padding: 26px 18px; }
+  .modal-summary-row { flex-direction: column; align-items: flex-start; gap: 2px; }
 }
 
+
+/* =========================================================
+   FASE 3: FERRAMENTAS CLÍNICAS MODERNAS E ACOLHIMENTO
+   ========================================================= */
+
+/* 1. TRIAGEM ACOLHEDORA & TERMÔMETRO EMOCIONAL */
+.triagem-widget-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 12px 40px var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.triagem-step-header {
+  margin-bottom: 22px;
+}
+.triagem-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: var(--soft);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.triagem-step-header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--text);
+  line-height: 1.3;
+}
+.triagem-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 12px;
+}
+.triagem-opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--item-bg);
+  border: 1px solid var(--item-line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text);
+  font-family: inherit;
+}
+.triagem-opt-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: var(--soft);
+}
+.triagem-opt-emoji {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.triagem-opt-info strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.triagem-opt-info small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Modalidade na Triagem */
+.triagem-modalidade-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.triagem-mod-btn {
+  background: var(--item-bg);
+  border: 1px solid var(--item-line);
+  border-radius: 18px;
+  padding: 24px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+  font-family: inherit;
+}
+.triagem-mod-btn:hover {
+  border-color: var(--accent);
+  background: var(--soft);
+  transform: translateY(-2px);
+}
+.triagem-mod-icon {
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.triagem-mod-btn strong {
+  font-size: 16.5px;
+  color: var(--text);
+}
+.triagem-mod-btn span {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* Resultado da Triagem */
+.triagem-result-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  background: linear-gradient(135deg, rgba(208, 175, 118, 0.08), rgba(34, 42, 48, 0.6));
+  border: 1px solid rgba(208, 175, 118, 0.3);
+  border-radius: 20px;
+  padding: 28px 24px;
+}
+.triagem-result-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--accent);
+  color: #111519;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.triagem-result-content h3 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+.triagem-result-content p {
+  margin: 0 0 16px;
+  font-size: 14.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.triagem-summary-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.triagem-summary-pill {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text);
+}
+.triagem-summary-pill strong {
+  color: var(--accent);
+}
+.triagem-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 2. PLAYER DE ACOLHIMENTO EM ÁUDIO (VOICE BIO) */
+.voice-bio-card {
+  margin-top: 26px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px 24px;
+  box-shadow: 0 8px 30px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.voice-bio-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.voice-bio-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--soft);
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.voice-bio-icon {
+  font-size: 20px;
+}
+.voice-bio-pulse {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.voice-bio-card.playing .voice-bio-pulse {
+  animation: voicePulse 1.8s ease-out infinite;
+}
+@keyframes voicePulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.voice-bio-titles strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+}
+.voice-bio-titles span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.voice-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--item-bg);
+  border: 1px solid var(--item-line);
+  border-radius: 999px;
+  padding: 8px 16px 8px 10px;
+}
+.voice-play-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #111519;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .2s ease, background-color .2s ease;
+}
+.voice-play-btn:hover {
+  transform: scale(1.06);
+  background: #DFBF88;
+}
+.voice-waveform-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.voice-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+}
+.v-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--dash);
+  border-radius: 2px;
+  transition: height .2s ease, background-color .2s ease;
+}
+.voice-bio-card.playing .v-bar {
+  background: var(--accent);
+  animation: waveJump .8s ease-in-out infinite alternate;
+}
+.voice-bio-card.playing .v-bar:nth-child(2n) { animation-delay: .15s; }
+.voice-bio-card.playing .v-bar:nth-child(3n) { animation-delay: .3s; }
+.voice-bio-card.playing .v-bar:nth-child(4n) { animation-delay: .45s; }
+.voice-bio-card.playing .v-bar:nth-child(5n) { animation-delay: .6s; }
+
+@keyframes waveJump {
+  0% { height: 4px; }
+  100% { height: 22px; }
+}
+.voice-time-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.voice-speed-btn {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.voice-speed-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.voice-transcript-wrap {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.voice-transcript-toggle {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color .2s ease;
+  font-family: inherit;
+}
+.voice-transcript-toggle:hover {
+  color: var(--accent);
+}
+.voice-transcript-content {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--soft);
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* 3. GUIA DE REEMBOLSO DO PLANO DE SAÚDE */
+.reembolso-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.reembolso-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.reembolso-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.reembolso-step-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--soft);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+.reembolso-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+.reembolso-card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text);
+}
+.reembolso-card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.reembolso-help-box {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.reembolso-help-text strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+}
+.reembolso-help-text p {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* 4. POLÍTICA ÉTICA DE CONFIRMAÇÃO 48H */
+.politica-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 20px;
+}
+.politica-item-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.politica-item-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.politica-item-card h3 {
+  margin: 0;
+  font-size: 17.5px;
+  color: var(--text);
+}
+.politica-item-card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* RESPONSIVIDADE FASE 3 */
+@media (max-width: 768px) {
+  .triagem-modalidade-grid { grid-template-columns: 1fr; }
+  .triagem-widget-card { padding: 24px 18px; border-radius: 20px; }
+  .triagem-result-card { flex-direction: column; padding: 20px 16px; }
+  .voice-bio-card { padding: 18px 16px; }
+  .reembolso-help-box { flex-direction: column; align-items: flex-start; }
+}
+
+/* =========================================================
+   TELAS ULTRA COMPACTAS (Dell Venue Pro 320px, Galaxy A12/A05 360px, iPhone 13 mini)
+   ========================================================= */
+@media (max-width: 360px) {
+  .wrap {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .brand { max-width: 140px; }
+  .brand-name { font-size: 15px; }
+  .brand-sub { font-size: 9.5px; }
+  .nav-cta-mobile { padding: 0 8px; font-size: 11.5px; min-height: 32px; }
+  .metric-num { font-size: 19px; }
+  .metric-label { font-size: 10px; }
+  
+  /* Agendamento Ultra Compacto */
+  .booking-card {
+    padding: 16px 8px !important;
+    border-radius: 14px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .booking-options-row { grid-template-columns: 1fr; }
+  .booking-opt-btn { padding: 10px 8px; font-size: 12.5px; gap: 8px; }
+  .booking-chip-btn { padding: 6px 10px; font-size: 12px; }
+  .booking-calendar-wrapper { gap: 12px; }
+  .cal-box { padding: 12px 6px; border-radius: 14px; }
+  .slots-box { padding: 12px 6px; border-radius: 14px; }
+  .cal-weekdays span { font-size: 10px; }
+  .cal-day-cell { min-height: 32px; font-size: 11.5px; }
+  .time-chips-grid { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 4px; }
+  .time-chip { padding: 6px 4px; font-size: 11px; }
+  .booking-input { padding: 10px 10px; font-size: 13.5px; }
+  .booking-submit-btn { font-size: 14.5px; min-height: 46px; }
+
+  /* Triagem & Voice Bio Ultra Compactos */
+  .triagem-widget-card { padding: 16px 8px !important; border-radius: 14px; }
+  .triagem-opt-btn { padding: 10px 8px; gap: 8px; }
+  .triagem-opt-emoji { font-size: 20px; }
+  .triagem-opt-info strong { font-size: 13.5px; }
+  .triagem-opt-info small { font-size: 12px; }
+  .voice-bio-card { padding: 14px 10px; border-radius: 14px; }
+  .voice-player-controls { padding: 6px 8px; gap: 6px; }
+  .voice-play-btn { width: 36px; height: 36px; font-size: 13px; }
+  .voice-speed-btn { padding: 3px 6px; font-size: 10.5px; }
+}
 
 /* Compensação do cabeçalho fixo ao rolar para âncoras (#) */
 section[id], article[id], div[id] {

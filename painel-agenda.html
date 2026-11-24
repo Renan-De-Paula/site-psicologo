@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Gestão da Agenda Clínica · Dra. Thalita de Paula</title>
+  <meta name="description" content="Painel de controle interno e gestão de agendamentos com automação e monitoramento de confirmação ética 48h antes da consulta.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos do Painel -->
+  <link rel="stylesheet" href="css/painel.css">
+</head>
+<body class="painel-body">
+
+  <!-- CABEÇALHO DO PAINEL -->
+  <header class="painel-header">
+    <div class="painel-header-wrap">
+      <div class="painel-brand">
+        <div class="painel-brand-badge">Ψ</div>
+        <div class="painel-brand-info">
+          <h1>
+            Thalita de Paula
+            <span style="font-size:12px;background:var(--p-soft);color:var(--p-accent);padding:2px 8px;border-radius:6px;border:1px solid var(--p-line)">CRP 00/[00000]</span>
+          </h1>
+          <p>Painel de Gestão da Agenda &amp; Monitoramento de Confirmação 48h</p>
+        </div>
+      </div>
+
+      <div class="painel-header-actions">
+        <span id="backend-status-badge" class="backend-badge" title="Status da conexão com a API Spring Boot"><span class="badge-dot"></span> <span class="badge-text">Conectando...</span></span>
+        <span id="live-clock" style="font-size:13px;color:var(--p-muted);margin-right:8px;display:none;align-items:center;"></span>
+        
+        <button type="button" class="p-btn p-btn-outline" id="btn-carregar-demo" title="Carregar exemplos com 1 caso na janela de 48h para teste">
+          <span>⚡ Dados Demo</span>
+        </button>
+
+        <button type="button" class="p-btn p-btn-outline" id="btn-exportar-csv" title="Baixar relatório em formato CSV para Excel/Sheets">
+          <span>📥 Exportar CSV</span>
+        </button>
+
+        <button type="button" class="p-btn p-btn-accent" id="btn-novo-agendamento">
+          <span>+ Novo Agendamento</span>
+        </button>
+
+        <a href="index.html" class="p-btn p-btn-outline" title="Voltar para a página pública">
+          <span>← Ir ao Site</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="painel-main">
+
+    <!-- BANNER DE ALERTA JANELA 48H (Aparece quando há consultas nas próximas 48h precisando de lembrete) -->
+    <div class="alert-48h-banner" id="banner-alerta-48h" style="display:none;">
+      <div class="alert-48h-left">
+        <div class="alert-48h-icon">🔔</div>
+        <div class="alert-48h-text">
+          <strong>Atenção: Janela de Confirmação 48h Ativa!</strong>
+          <p>
+            Existe(m) <strong id="banner-count-48h">0</strong> agendamento(s) programado(s) para as próximas 48 horas aguardando disparo do lembrete de confirmação via WhatsApp.
+          </p>
+        </div>
+      </div>
+      <div class="alert-48h-right">
+        <button type="button" class="p-btn p-btn-wa" id="btn-disparar-todos-48h">
+          <span>💬 Iniciar Disparos WhatsApp</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- GRID DE MÉTRICAS / KPIS -->
+    <section class="metrics-grid" aria-label="Métricas da Agenda">
+      <div class="metric-card warn-card">
+        <div class="metric-header">
+          <span class="metric-label">Janela 48h (Ação Pendente)</span>
+          <div class="metric-icon-pill" style="color:var(--p-warn)">🔔</div>
+        </div>
+        <div class="metric-value" id="metric-48h">0</div>
+        <div class="metric-sub">Consultas em até 48h sem lembrete</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Presenças Confirmadas</span>
+          <div class="metric-icon-pill" style="color:var(--p-success)">✓</div>
+        </div>
+        <div class="metric-value" id="metric-confirmados" style="color:var(--p-success)">0</div>
+        <div class="metric-sub">Confirmaram pelo WhatsApp</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Agendadas Futuras</span>
+          <div class="metric-icon-pill" style="color:var(--p-accent)">⏳</div>
+        </div>
+        <div class="metric-value" id="metric-futuros">0</div>
+        <div class="metric-sub">Consultas com mais de 48h de prazo</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Consultas Concluídas</span>
+          <div class="metric-icon-pill" style="color:var(--p-info)">🏁</div>
+        </div>
+        <div class="metric-value" id="metric-concluidos">0</div>
+        <div class="metric-sub">Sessões realizadas</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Total Cadastrado</span>
+          <div class="metric-icon-pill" style="color:var(--p-muted)">📊</div>
+        </div>
+        <div class="metric-value" id="metric-total">0</div>
+        <div class="metric-sub">Todos os registros locais</div>
+      </div>
+    </section>
+
+    <!-- BARRA DE BUSCA E FILTROS -->
+    <div class="controls-card">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="input-search" placeholder="Buscar por paciente, WhatsApp, protocolo ou foco..." aria-label="Filtrar agendamentos">
+      </div>
+
+      <div class="filter-tabs" role="tablist" aria-label="Filtros de status">
+        <button type="button" class="filter-tab active" data-filter="todos">Todos</button>
+        <button type="button" class="filter-tab badge-tab" data-filter="48h" style="color:#FBBF24">
+          🔔 Janela 48h <span class="tab-count" id="tab-count-48h" style="display:none">0</span>
+        </button>
+        <button type="button" class="filter-tab" data-filter="confirmados">Confirmados</button>
+        <button type="button" class="filter-tab" data-filter="futuros">Futuros (&gt;48h)</button>
+        <button type="button" class="filter-tab" data-filter="concluidos">Concluídos</button>
+        <button type="button" class="filter-tab" data-filter="cancelados">Cancelados</button>
+      </div>
+    </div>
+
+    <!-- LISTA DE AGENDAMENTOS -->
+    <section class="appointments-container" id="appointments-list" aria-label="Lista de Agendamentos">
+      <!-- Cards gerados dinamicamente via JavaScript -->
+    </section>
+
+    <!-- ESTADO VAZIO -->
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="empty-icon">📅</div>
+      <h2 class="empty-title">Nenhum agendamento encontrado</h2>
+      <p class="empty-desc">
+        Não há atendimentos correspondentes ao filtro selecionado ou a agenda ainda não possui registros.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button type="button" class="p-btn p-btn-accent" onclick="document.getElementById('btn-novo-agendamento').click()">
+          + Cadastrar Agendamento
+        </button>
+        <button type="button" class="p-btn p-btn-outline" id="btn-carregar-demo-empty">
+          ⚡ Carregar Agendamentos de Demonstração
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: NOVO AGENDAMENTO MANUAL -->
+  <div class="p-modal-overlay" id="modal-novo-agendamento" role="dialog" aria-modal="true" aria-labelledby="modal-novo-title">
+    <div class="p-modal-card">
+      <div class="p-modal-header">
+        <h3 id="modal-novo-title">Cadastrar Novo Agendamento</h3>
+        <button type="button" class="p-modal-close" aria-label="Fechar modal">✕</button>
+      </div>
+      <form id="form-novo-agendamento">
+        <div class="form-group">
+          <label for="novo-nome">Nome Completo do Paciente *</label>
+          <input type="text" id="novo-nome" class="form-control" placeholder="Ex: Camila Silva" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="novo-tel">WhatsApp com DDD *</label>
+            <input type="tel" id="novo-tel" class="form-control" placeholder="(11) 99999-9999" required>
+          </div>
+          <div class="form-group">
+            <label for="novo-email">E-mail</label>
+            <input type="email" id="novo-email" class="form-control" placeholder="paciente@exemplo.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="novo-mod">Modalidade *</label>
+            <select id="novo-mod" class="form-control">
+              <option value="Presencial no consultório (Vila Ema)">Presencial no consultório (Vila Ema)</option>
+              <option value="Online por videochamada (e-Psi)">Online por videochamada (e-Psi)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="novo-foco">Foco Clínico *</label>
+            <select id="novo-foco" class="form-control">
+              <option value="Ansiedade &amp; Estresse">Ansiedade &amp; Estresse</option>
+              <option value="Esgotamento &amp; Burnout">Esgotamento &amp; Burnout</option>
+              <option value="Relacionamentos &amp; Família">Relacionamentos &amp; Família</option>
+              <option value="Luto &amp; Transições de Vida">Luto &amp; Transições de Vida</option>
+              <option value="Autoconhecimento &amp; Autoestima">Autoconhecimento &amp; Autoestima</option>
+              <option value="Outras Demandas Clínicas">Outras Demandas Clínicas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="novo-data">Data da Consulta *</label>
+            <input type="date" id="novo-data" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="novo-hora">Horário *</label>
+            <select id="novo-hora" class="form-control">
+              <option value="08:30">08:30</option>
+              <option value="09:30">09:30</option>
+              <option value="10:30">10:30</option>
+              <option value="11:30">11:30</option>
+              <option value="13:30">13:30</option>
+              <option value="14:30" selected>14:30</option>
+              <option value="15:30">15:30</option>
+              <option value="16:30">16:30</option>
+              <option value="17:30">17:30</option>
+              <option value="18:30">18:30</option>
+              <option value="19:30">19:30</option>
+              <option value="20:30">20:30</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="novo-notas">Observações Clínicas / Contexto</label>
+          <textarea id="novo-notas" class="form-control" rows="3" placeholder="Ex: Paciente encaminhado por médico; disponibilidade preferencial à tarde."></textarea>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+          <button type="button" class="p-btn p-btn-outline p-modal-close">Cancelar</button>
+          <button type="submit" class="p-btn p-btn-accent">Salvar Agendamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REAGENDAMENTO -->
+  <div class="p-modal-overlay" id="modal-reagendar" role="dialog" aria-modal="true" aria-labelledby="modal-reagendar-title">
+    <div class="p-modal-card" style="max-width:460px;">
+      <div class="p-modal-header">
+        <h3 id="modal-reagendar-title">Reagendar Consulta</h3>
+        <button type="button" class="p-modal-close" aria-label="Fechar modal">✕</button>
+      </div>
+      <form id="form-reagendar">
+        <p style="margin:0 0 16px;font-size:14px;color:var(--p-muted);">
+          Paciente: <strong id="reagendar-nome" style="color:var(--p-text)">-</strong>
+        </p>
+
+        <div class="form-group">
+          <label for="reagendar-data">Nova Data *</label>
+          <input type="date" id="reagendar-data" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="reagendar-hora">Novo Horário *</label>
+          <select id="reagendar-hora" class="form-control">
+            <option value="08:30">08:30</option>
+            <option value="09:30">09:30</option>
+            <option value="10:30">10:30</option>
+            <option value="11:30">11:30</option>
+            <option value="13:30">13:30</option>
+            <option value="14:30" selected>14:30</option>
+            <option value="15:30">15:30</option>
+            <option value="16:30">16:30</option>
+            <option value="17:30">17:30</option>
+            <option value="18:30">18:30</option>
+            <option value="19:30">19:30</option>
+            <option value="20:30">20:30</option>
+          </select>
+        </div>
+
+        <p style="font-size:12.5px;color:var(--p-muted);margin:14px 0 20px;">
+          * Ao reagendar, o status será redefinido para aguardando confirmação 48h antes da nova data.
+        </p>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button type="button" class="p-btn p-btn-outline p-modal-close">Cancelar</button>
+          <button type="submit" class="p-btn p-btn-accent">Confirmar Nova Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST DE NOTIFICAÇÃO -->
+  <div class="p-toast" id="painel-toast" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="js/painel.js"></script>
+</body>
+</html>

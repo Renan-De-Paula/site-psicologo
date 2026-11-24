@@ -1,15 +1,18 @@
 <div align="center">
 
-# 🌿 Thalita de Paula | Psicologia Clínica & Psicoterapia
+# 🌿 Thalita de Paula | Plataforma Clínica & Sistema de Agendamento v3
 
-**Landing Page de Alta Conversão, Agendamento Inteligente e Presença Digital**
+**Solução Full-Stack Completa: Landing Page Dark Luxe, Backend Spring Boot 3 com Java 21, Banco de Dados H2 Persistente, Sincronização Google Agenda e Painel Administrativo**
 
+[![Versão](https://img.shields.io/badge/Versão-3.0.0-D0AF76?style=for-the-badge&logoColor=13171B)]()
+[![Java 21](https://img.shields.io/badge/Java-21_LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot 3](https://img.shields.io/badge/Spring_Boot-3.3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![H2 Database](https://img.shields.io/badge/Database-H2_Embedded-003B57?style=for-the-badge&logo=h2&logoColor=white)](https://www.h2database.com/)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/pt-BR/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/pt-BR/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
-[![Dark Luxe](https://img.shields.io/badge/Tema-Noturno_Elegante-D0AF76?style=for-the-badge&logoColor=13171B)]()
+[![Google Calendar](https://img.shields.io/badge/Google_Calendar-Web_Direct-4285F4?style=for-the-badge&logo=googlecalendar&logoColor=white)](https://calendar.google.com/)
 [![Mobile First](https://img.shields.io/badge/Mobile--First-320px_a_4K-brightgreen?style=for-the-badge&logo=googlechrome&logoColor=white)]()
-[![Vanilla](https://img.shields.io/badge/Zero_Frameworks-Vanilla_Puro-blueviolet?style=for-the-badge)]()
 
 <br />
 
@@ -17,105 +20,190 @@
 
 ---
 
-## 📌 Sobre o Projeto
+## 📌 Sobre a Versão 3.0 (v3-enterprise)
 
-Plataforma digital moderna e de alta conversão desenvolvida para psicólogos clínicos, com foco em acolhimento ético, apresentação de especialidades e facilidade no agendamento de consultas tanto **Presenciais** quanto **Online**.
+A **Versão 3.0** transforma a experiência clínica em uma **arquitetura Full-Stack de nível empresarial**, unindo a sofisticação do design Dark Luxe a um **motor de backend robusto em Java 21 com Spring Boot 3 e banco de dados relacional H2**.
 
-O projeto conta com arquitetura *Mobile-First*, tema exclusivo **Noturno Elegante** (*dark modern theme* `#13171B` com toques em ouro champagne `#D0AF76`), tipografia editorial de luxo (*Cormorant Garamond* e *Manrope*), microinterações táteis e total conformidade com as diretrizes do **CFP** e da **LGPD**.
-
-Construído 100% em **HTML5, CSS3 e JavaScript puro (Vanilla)**, garantindo carregamento instantâneo, zero dependências pesadas e nota máxima em performance.
-
----
-
-## 📸 Demonstração Visual
-
-### 1. Seção Principal (Hero & Apresentação)
-Design imersivo com tipografia clássica, proposta de valor humanizada, credenciais profissionais ativas (CRP e e-Psi), foto de destaque e botões de chamada rápida para ação.
-
-![Hero Section Desktop](img/screenshot-desktop.png)
+### 🌟 Destaques da Evolução (v2 ➔ v3)
+1. **Banco de Dados Relacional H2 Persistente**: Armazenamento durável em arquivo local com grade de **612 slots pré-configurados** (Segunda a Sábado, das 08:30 às 20:30, sábados encerrando às 17:30 e domingos fechados).
+2. **Controle Atômico de Concorrência**: Bloqueio atômico de horários. Quando um paciente agenda, o horário fica indisponível em tempo real no banco. Se cancelado no painel, o slot é liberado automaticamente.
+3. **Sincronização Direta com Google Agenda**: Botão dedicado de 1 clique que abre o Google Calendar Web no navegador com data, horário de 50 minutos, protocolo e endereço pré-preenchidos — sem necessidade de downloads de arquivos.
+4. **Alarme Duplo Universal (.ics)**: Arquivo iCalendar padrão RFC 5545 com dois alarmes programados (48 horas e 2 horas antes da sessão) para Apple Calendar e Outlook.
+5. **Inicializador 1-Clique Portável (`iniciar.bat`)**: Script de orquestração com verificação automática de portas, compilação via Maven Wrapper (`mvnw`), inicialização em segundo plano e abertura instantânea do navegador.
+6. **Resiliência com Fallback Offline**: Caso o servidor backend seja interrompido, o frontend faz fallback transparente e instantâneo para o `localStorage`, sem quebrar a jornada do paciente.
 
 ---
 
-### 2. Experiência Mobile & Responsividade
-Layout homologado para telas de **320px a 440px** (iPhone SE, Galaxy, iPhone 16 Pro Max), sem transbordamento horizontal. O cabeçalho mobile conta com o nome da psicóloga formatado em duas linhas elegantes, botão de agendamento em destaque e menu gaveta com transição fluida.
+## ⚡ Principais Funcionalidades
 
-<div align="center">
-  <img src="img/screenshot-mobile.png" alt="Prévia Mobile Responsiva" width="360" />
-</div>
+### 1. 📅 Motor de Agendamento Inteligente (`#agendamento`)
+- **Grade Real de Horários**: Consulta em tempo real à API REST `/api/disponibilidade/dia` para desabilitar visualmente chips de horários já reservados (`.time-chip.disabled`).
+- **Resumo Dinâmico em Tempo Real**: Feedback visual imediato com data formatada, horário, modalidade (Presencial na Vila Ema ou Online e-Psi) e foco clínico.
+- **Modal de Confirmação Multicanal**:
+  - 🟢 **WhatsApp com Protocolo**: Envia mensagem estruturada com código exclusivo (`#PSI-XXXX`).
+  - 🔵 **Salvar no Google Agenda (Abre Direto)**: Abre o Google Calendar com todos os detalhes prontos para salvar com 1 clique.
+  - 🍏 **Salvar no iPhone / Outlook (.ics)**: Download do arquivo `.ics` com feedback visual imediato e guia de uso.
 
----
-
-### 3. Visão Geral da Estrutura
-Fluxo completo com seções organizadas estrategicamente: Métricas de Atendimento, Queixas Clínicas Acolhidas, Apresentação Profissional, Consultório Físico, Sistema de Agendamento e Dúvidas Frequentes (FAQ).
-
-![Visão Geral do Projeto](img/screenshot-full.png)
-
----
-
-## ⚡ Principais Funcionalidades & Recursos
-
-- **Agendamento Inteligente pelo Site:**
-  - Seleção dinâmica entre atendimento Presencial ou Online.
-  - Escolha de período de preferência (Manhã, Tarde ou Noite).
-  - Máscara automática para número de WhatsApp no formato `(XX) XXXXX-XXXX`.
-  - Geração de código de protocolo exclusivo (`#PSI-XXXX`).
-  - Modal de confirmação que monta automaticamente a mensagem no WhatsApp.
-- **Hub de Rotas & Mobilidade com 1 Clique:**
-  - 🗺️ Rota traçada diretamente no **Google Maps**.
-  - 🚗 Navegação em tempo real via **Waze**.
-  - 🚕 Chamada direta de corrida pelo **Uber** com destino já preenchido.
-  - 📇 Download de cartão de contato digital (**vCard / .vcf**) direto para a agenda do smartphone.
-- **Balão Inteligente do WhatsApp:** Disparado suavemente após 5 segundos de navegação, com botão de fechar e memorização de sessão.
-- **Banner de Privacidade & Cookies (LGPD):** Aviso de consentimento discreto com persistência via `localStorage`.
-- **Perguntas Frequentes (FAQ):** Acordeão nativo HTML5 (`<details>` e `<summary>`) para esclarecimento rápido de dúvidas (convênios, sigilo e primeira sessão).
-- **Rastreamento de Conversões:** Pré-configurado para envio de eventos de lead para **Google Analytics 4 (GA4)** e **Meta Pixel**.
+### 2. 🗂️ Painel Administrativo da Psicóloga (`painel-agenda.html`)
+- **Badge de Status de Conexão**: Indicador visual dinâmico `🟢 Spring Boot Ativo (H2 DB)` ou `🟡 Modo Local (Offline)`.
+- **Detector Automático da Janela de 48h**: Destaca em dourado os atendimentos que exigem confirmação ética de presença.
+- **Disparo de Confirmação via WhatsApp**: Envia template pré-formatado diretamente para o paciente com um clique.
+- **Gestão de Ciclo de Vida**: Transições de status (*PENDENTE_48H*, *CONFIRMADO*, *CONCLUIDO*, *CANCELADO*) com sincronização automática do banco H2.
+- **Exportação de Relatórios**: Download de relatório completo em CSV compatível com Excel e Google Sheets.
 
 ---
 
-## 🛠️ Tecnologias & Engenharia
+## 🏗️ Arquitetura do Sistema
 
-| Tecnologia | Finalidade |
-| :--- | :--- |
-| **HTML5 Semântico** | Estruturação acessível com tags semânticas (`header`, `main`, `section`, `article`, `footer`, `details`, `summary`). |
-| **CSS3 Moderno** | Design Tokens com CSS Custom Properties, layout flexível com CSS Grid/Flexbox, tipografia fluida e suporte a *safe area insets* (iOS notches). |
-| **JavaScript Vanilla (ES6+)** | Lógica de agendamento, validação de formulário, máscara de telefone, rotas de mobilidade e controle de cookies sem frameworks ou bibliotecas pesadas. |
-| **Vetores SVG Embutidos** | Ícones vetoriais leves e nítidos em qualquer resolução sem carregar fontes de ícones externas. |
-| **Schema.org (JSON-LD)** | Dados estruturados para indexação no Google com informações de profissional de saúde e serviços clínicos. |
+```mermaid
+flowchart TD
+    subgraph Frontend["Frontend (Vanilla Luxe ES2024)"]
+        UI["index.html (Agendamento & Triagem)"]
+        Admin["painel-agenda.html (Gestão da Psicóloga)"]
+        JS["js/script.js & js/painel.js"]
+    end
 
----
+    subgraph Backend["Backend (Spring Boot 3.3.5 / Java 21)"]
+        API["REST Controllers (/api)"]
+        Service["AgendamentoService (Transações Atômicas)"]
+        Repo["JPA Repositories"]
+    end
 
-## 📁 Estrutura de Diretórios
+    subgraph Database["Camada de Dados"]
+        H2[("H2 Database (./data/psicologo_db)")]
+    end
 
-```text
-Psicologo/
-├── css/
-│   └── style.css                 # Estilização completa, variáveis do tema e responsividade
-├── js/
-│   └── script.js                 # Lógica de agendamento, rotas, máscara, modal e LGPD
-├── img/
-│   ├── screenshot-desktop.png    # Captura em alta resolução da versão Desktop
-│   ├── screenshot-mobile.png     # Captura em alta resolução da versão Mobile
-│   ├── screenshot-full.png       # Captura da visão completa da página
-│   ├── psicologa-exemplo.jpg     # Foto da psicóloga
-│   ├── consultorio-1.jpg         # Foto do consultório físico
-│   └── favicon.svg               # Favicon minimalista em formato SVG
-├── index.html                    # Landing page principal completa, semântica e responsiva
-├── privacidade.html              # Página dedicada de Política de Privacidade e LGPD
-├── .gitignore                    # Regras de exclusão do Git
-└── README.md                     # Documentação do projeto
+    subgraph Integrations["Integrações Externas"]
+        GCal["Google Agenda Web (Direct URL)"]
+        WA["WhatsApp Web / App API"]
+        ICS["iCalendar RFC 5545 (.ics)"]
+    end
+
+    UI -->|Fetch REST| API
+    Admin -->|Fetch REST| API
+    API --> Service
+    Service --> Repo
+    Repo --> H2
+    UI -.-> GCal
+    UI -.-> WA
+    UI -.-> ICS
 ```
 
 ---
 
-## 💻 Como Usar o Projeto
+## 🔌 Endpoints da API RESTful
 
-Por ser um projeto construído exclusivamente em **HTML5, CSS3 e JavaScript puro**, ele não requer Node.js, compilação ou banco de dados:
-
-1. **Execução Direta:** Basta abrir o arquivo `index.html` em qualquer navegador web moderno (Google Chrome, Microsoft Edge, Safari, Firefox).
-2. **Via Live Server:** Caso utilize o VS Code ou Cursor, clique com o botão direito no arquivo `index.html` e selecione **"Open with Live Server"**.
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `GET` | `/api/agendamentos/health` | Health check da API (`UP`) |
+| `GET` | `/api/disponibilidade/dia?data=YYYY-MM-DD` | Lista status de todos os 12 slots da data |
+| `GET` | `/api/disponibilidade/mes?ano=YYYY&mes=MM` | Grade mensal de ocupação |
+| `GET` | `/api/agendamentos` | Lista todos os agendamentos cadastrados |
+| `POST` | `/api/agendamentos` | Cria novo agendamento com trava atômica (Retorna 409 em caso de conflito) |
+| `PATCH` | `/api/agendamentos/{id}/status` | Atualiza status e libera o slot se cancelado |
+| `POST` | `/api/agendamentos/{id}/disparar-lembrete` | Registra disparo de confirmação 48h |
+| `GET` | `/api/agendamentos/estatisticas` | Retorna KPIs em tempo real para o painel |
 
 ---
 
-## 📄 Licença
+## 💻 Como Executar o Projeto
 
-Este projeto foi desenvolvido para apresentação profissional e comercial de landing pages clínicas de alta conversão. Livre para uso e customização.
+### Pré-requisitos
+* **Java 21 LTS** ou superior instalado na máquina ([Download OpenJDK 21](https://adoptium.net/temurin/releases/?version=21)).
+* *(Opcional)* O Maven **não** precisa estar instalado; o projeto já inclui o **Maven Wrapper (`mvnw`)**.
+
+### Opção 1: Inicializador 1-Clique (Recomendado no Windows)
+Basta dar **dois cliques** no arquivo na raiz do projeto:
+```text
+iniciar.bat
+```
+ou
+```text
+INICIAR_PROJETO.bat
+```
+O script cuidará de tudo:
+1. Verifica o Java 21;
+2. Compila o backend via Maven Wrapper caso necessário;
+3. Libera a porta 8080 caso esteja presa;
+4. Inicia o servidor Spring Boot em segundo plano;
+5. Aguarda o health check responder `UP`;
+6. Abre automaticamente o site no seu navegador padrão (`http://localhost:8080`).
+
+### Opção 2: Linha de Comando (Terminal)
+```bash
+# Entre na pasta do backend
+cd backend
+
+# No Windows:
+.\mvnw.cmd spring-boot:run
+
+# No Linux/macOS:
+chmod +x mvnw
+./mvnw spring-boot:run
+```
+
+Após iniciar, acesse:
+* **Site Principal (Paciente)**: `http://localhost:8080`
+* **Painel Administrativo da Psicóloga**: `http://localhost:8080/painel-agenda.html`
+* **Console SQL do Banco H2**: `http://localhost:8080/h2-console`
+  * **JDBC URL**: `jdbc:h2:file:./data/psicologo_db`
+  * **User**: `sa`
+  * **Password**: *(em branco)*
+
+---
+
+## 📁 Estrutura de Diretórios da v3
+
+```text
+Psicologo-Moderno/
+├── backend/
+│   ├── .mvn/wrapper/             # Configuração do Maven Wrapper portável
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/psicologia/agenda/
+│   │   │   │   ├── config/       # WebCorsConfig e DataInitializer (Seed 612 slots)
+│   │   │   │   ├── controller/   # AgendamentoController e DisponibilidadeController
+│   │   │   │   ├── dto/          # Java Records (Request / Response DTOs)
+│   │   │   │   ├── exception/    # RFC 7807 ProblemDetail Exception Handlers
+│   │   │   │   ├── model/        # Entidades JPA (Agendamento, Disponibilidade)
+│   │   │   │   ├── repository/   # Spring Data JPA Repositories
+│   │   │   │   └── service/      # Regras de Negócio e Travas Atômicas
+│   │   │   └── resources/
+│   │   │       └── application.yml # Configurações H2, Virtual Threads e Porta 8080
+│   │   └── test/                 # Testes unitários e de integração
+│   ├── mvnw                      # Maven Wrapper script Linux/macOS
+│   ├── mvnw.cmd                  # Maven Wrapper script Windows
+│   └── pom.xml                   # Configuração de dependências Spring Boot 3.3.5
+├── css/
+│   ├── style.css                 # Estilos da landing page, agendamento, Google Agenda e triagem
+│   └── painel.css                # Estilos do painel de controle e badge de status do banco
+├── js/
+│   ├── script.js                 # Integração com API REST, Google Agenda Web e fallback local
+│   └── painel.js                 # Lógica do painel, KPIs, disparo 48h e sincronização REST
+├── img/                          # Identidade visual, fotos da clínica e favicons
+├── index.html                    # Landing page pública com motor de agendamento integrado
+├── painel-agenda.html            # Painel administrativo da profissional
+├── privacidade.html              # Política de Privacidade & conformidade ética LGPD
+├── iniciar.bat                   # Inicializador 1-clique Windows
+├── INICIAR_PROJETO.bat           # Atalho de inicialização
+├── iniciar.ps1                   # Script mestre PowerShell com health check e menu interativo
+├── .gitignore                    # Regras estritas de exclusão (ignora target/ e data/)
+├── LICENSE                       # Licença do projeto
+└── README.md                     # Documentação completa da versão v3.0.0
+```
+
+---
+
+## ⚖️ Conformidade Ética & LGPD
+
+* **Resolução CFP nº 11/2018**: Adequação completa às normas de prestação de serviços psicológicos realizados por meios de tecnologias da informação e da comunicação.
+* **LGPD (Lei nº 13.709/2018)**: Coleta estrita de dados necessários para contato clínico e prontuário, sem compartilhamento com terceiros não autorizados.
+
+---
+
+<div align="center">
+
+**Desenvolvido com excelência técnica, rigor estético e conformidade clínica.**  
+*Thalita de Paula · Psicóloga Clínica · CRP 00/[00000]*
+
+</div>

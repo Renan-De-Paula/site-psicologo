@@ -85,8 +85,10 @@
     </div>
     <div class="navlinks" id="navlinks">
       <a href="#para-quem">Para Quem É</a>
+      <a href="#triagem-acolhedora">Triagem</a>
       <a href="#sobre">Sobre Mim</a>
       <a href="#como-funciona">Como Funciona</a>
+      <a href="#reembolso">Reembolso</a>
       <a href="#agendamento">Agendamento</a>
       <a href="#consultorio">Consultório</a>
       <a href="#duvidas">Dúvidas</a>
@@ -228,6 +230,112 @@
     </div>
   </section>
 
+  <!-- TRIAGEM ACOLHEDORA & TERMÔMETRO EMOCIONAL (ORIENTAÇÃO PERSONALIZADA) -->
+  <section id="triagem-acolhedora" class="section s-surface" aria-labelledby="triagem-title">
+    <div class="wrap stack">
+      <header class="head reveal">
+        <span class="eyebrow"><svg class="ic" style="width:14px;height:14px"><use href="#i-sparkle"></use></svg> Orientação Acolhedora</span>
+        <h2 class="title" id="triagem-title">Não sabe por onde começar? Encontre o seu caminho em 30 segundos</h2>
+        <p class="muted">Selecione o que você está vivenciando para receber uma recomendação empática e já direcionar o seu atendimento:</p>
+      </header>
+
+      <div class="triagem-widget-card reveal">
+        <!-- Passo 1: Queixa Principal / Sentimento -->
+        <div class="triagem-step-box active" id="triagem-step-1">
+          <div class="triagem-step-header">
+            <span class="triagem-badge">Etapa 1 de 2</span>
+            <h3>O que mais tem pesado no seu dia a dia ultimamente?</h3>
+          </div>
+          <div class="triagem-options-grid" role="radiogroup" aria-label="Motivo de busca terapêutica">
+            <button type="button" class="triagem-opt-btn" data-triagem-foco="Ansiedade &amp; Estresse">
+              <span class="triagem-opt-emoji">😰</span>
+              <div class="triagem-opt-info">
+                <strong>Ansiedade &amp; Mente Acelerada</strong>
+                <small>Preocupações excessivas, insônia, aperto no peito e dificuldade de desacelerar</small>
+              </div>
+            </button>
+            <button type="button" class="triagem-opt-btn" data-triagem-foco="Esgotamento &amp; Burnout">
+              <span class="triagem-opt-emoji">🔋</span>
+              <div class="triagem-opt-info">
+                <strong>Sobrecarga &amp; Burnout</strong>
+                <small>Esgotamento pelo trabalho, cansaço crônico e sensação de estar no limite</small>
+              </div>
+            </button>
+            <button type="button" class="triagem-opt-btn" data-triagem-foco="Relacionamentos &amp; Família">
+              <span class="triagem-opt-emoji">💬</span>
+              <div class="triagem-opt-info">
+                <strong>Relacionamentos &amp; Limites</strong>
+                <small>Conflitos a dois ou na família, dependência emocional e dificuldade em dizer não</small>
+              </div>
+            </button>
+            <button type="button" class="triagem-opt-btn" data-triagem-foco="Luto &amp; Transições de Vida">
+              <span class="triagem-opt-emoji">🌧️</span>
+              <div class="triagem-opt-info">
+                <strong>Luto, Término ou Mudança</strong>
+                <small>Processamento de perdas dolorosas, fim de relacionamentos e transições de vida</small>
+              </div>
+            </button>
+            <button type="button" class="triagem-opt-btn" data-triagem-foco="Autoconhecimento &amp; Autoestima">
+              <span class="triagem-opt-emoji">🧭</span>
+              <div class="triagem-opt-info">
+                <strong>Autoconhecimento &amp; Autoestima</strong>
+                <small>Insegurança, autocrítica severa e desejo de construir mais amor-próprio</small>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Passo 2: Modalidade Preferida -->
+        <div class="triagem-step-box" id="triagem-step-2" style="display:none;">
+          <div class="triagem-step-header">
+            <span class="triagem-badge">Etapa 2 de 2</span>
+            <h3>Como você prefere realizar suas consultas?</h3>
+          </div>
+          <div class="triagem-modalidade-grid" role="radiogroup" aria-label="Modalidade preferida">
+            <button type="button" class="triagem-mod-btn" data-triagem-mod="Presencial no consultório (Vila Ema)">
+              <span class="triagem-mod-icon">🌿</span>
+              <strong>Presencial no Consultório</strong>
+              <span>Ambiente acolhedor, silencioso e seguro na Vila Ema (São Paulo). Ideal para quem prefere sair da rotina e ter uma pausa pessoal.</span>
+            </button>
+            <button type="button" class="triagem-mod-btn" data-triagem-mod="Online por videochamada (e-Psi)">
+              <span class="triagem-mod-icon">💻</span>
+              <strong>Online por Videochamada</strong>
+              <span>No conforto da sua casa ou ambiente privado, de qualquer lugar do Brasil ou exterior. Sem deslocamentos, via Google Meet.</span>
+            </button>
+          </div>
+          <div style="margin-top:16px;">
+            <button type="button" class="btn btn-outline btn-sm" id="btn-triagem-voltar">← Voltar à pergunta anterior</button>
+          </div>
+        </div>
+
+        <!-- Passo 3: Feedback Acolhedor & Ação Direta -->
+        <div class="triagem-step-box" id="triagem-step-3" style="display:none;">
+          <div class="triagem-result-card">
+            <div class="triagem-result-icon">✨</div>
+            <div class="triagem-result-content">
+              <h3>Você deu o primeiro passo ao reconhecer o que está sentindo</h3>
+              <p id="triagem-feedback-text">
+                O acolhimento psicológico focado em suas necessidades permitirá mapear as origens dessa sobrecarga e construir estratégias práticas para resgatar sua tranquilidade.
+              </p>
+              <div class="triagem-summary-pills">
+                <span class="triagem-summary-pill">🎯 Foco: <strong id="triagem-res-foco">-</strong></span>
+                <span class="triagem-summary-pill">📍 Formato: <strong id="triagem-res-mod">-</strong></span>
+              </div>
+              <div class="triagem-cta-row">
+                <button type="button" class="btn btn-primary btn-md" id="btn-triagem-aplicar">
+                  <svg class="ic" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                  <span>Continuar para Agendamento com essas opções</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-triagem-reiniciar">Refazer Triagem</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- SOBRE A PSICÓLOGA -->
   <section id="sobre" class="section" aria-labelledby="sobre-title">
     <div class="wrap split">
@@ -261,6 +369,52 @@
             <div>
               <strong>Autorização Ativa no e-Psi</strong>
               <span>Atendimento online seguro e regulamentado para todo o Brasil</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLAYER DE ACOLHIMENTO EM ÁUDIO (VOICE BIO) -->
+        <div class="voice-bio-card" id="voice-bio">
+          <div class="voice-bio-header">
+            <div class="voice-bio-avatar-wrap">
+              <span class="voice-bio-icon">🎙️</span>
+              <span class="voice-bio-pulse" id="voice-pulse-ring" aria-hidden="true"></span>
+            </div>
+            <div class="voice-bio-titles">
+              <strong>Ouça uma mensagem acolhedora de boas-vindas</strong>
+              <span>Dra. Thalita de Paula · Áudio de apresentação (0:48)</span>
+            </div>
+          </div>
+
+          <div class="voice-player-controls">
+            <button type="button" class="voice-play-btn" id="btn-voice-play" aria-label="Tocar mensagem de acolhimento em áudio">
+              <span id="voice-play-icon">▶</span>
+            </button>
+
+            <div class="voice-waveform-wrap">
+              <div class="voice-waveform" id="voice-waveform" aria-hidden="true">
+                <span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span>
+                <span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span>
+                <span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span>
+                <span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span>
+                <span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span>
+              </div>
+              <div class="voice-time-row">
+                <span id="voice-current-time">0:00</span>
+                <span id="voice-total-time">0:48</span>
+              </div>
+            </div>
+
+            <button type="button" class="voice-speed-btn" id="btn-voice-speed" aria-label="Alterar velocidade de reprodução">1.0x</button>
+          </div>
+
+          <!-- Transcrição acessível WCAG AAA -->
+          <div class="voice-transcript-wrap">
+            <button type="button" class="voice-transcript-toggle" id="btn-voice-transcript" aria-expanded="false" aria-controls="voice-transcript-text">
+              <span>Ler transcrição do áudio</span> ▾
+            </button>
+            <div class="voice-transcript-content" id="voice-transcript-text" style="display:none;">
+              <p><em>"Olá! Seja muito bem-vindo(a). Se você está aqui, imagino que possa estar passando por um momento desafiador, ou sentindo o peso de carregar muitas coisas sozinho(a). Quero te dizer que buscar ajuda não é sinal de fraqueza, mas de profunda coragem. No nosso espaço, você não encontrará julgamentos, mas uma escuta ética, humana e atenta ao seu próprio ritmo. Sinta-se à vontade para conhecer nosso consultório ou agendar uma primeira conversa. Será um prazer caminhar ao seu lado."</em></p>
             </div>
           </div>
         </div>
@@ -299,110 +453,236 @@
     </div>
   </section>
 
-  <!-- SISTEMA DE AGENDAMENTO NO PRÓPRIO SITE (COM CONFIRMAÇÃO WHATSAPP & E-MAIL) -->
+  <!-- GUIA ÉTICO DE REEMBOLSO DO PLANO DE SAÚDE (LIVRE ESCOLHA ANS) -->
+  <section id="reembolso" class="section s-surface" aria-labelledby="reembolso-title">
+    <div class="wrap stack">
+      <header class="head reveal">
+        <span class="eyebrow"><svg class="ic" style="width:14px;height:14px"><use href="#i-check"></use></svg> Livre Escolha &amp; Reembolso</span>
+        <h2 class="title" id="reembolso-title">Como funciona o reembolso de consultas pelo seu plano de saúde</h2>
+        <p class="muted">
+          Para garantir total sigilo ético e sessões completas de 50 minutos dedicadas exclusivamente a você, nosso atendimento é particular. No entanto, a grande maioria dos convênios oferece o benefício de <strong>Livre Escolha com Reembolso</strong> (Resolução Normativa ANS).
+        </p>
+      </header>
+
+      <div class="reembolso-grid">
+        <article class="reembolso-card reveal">
+          <div class="reembolso-step-badge">1</div>
+          <div class="reembolso-icon">📱</div>
+          <h3>Consulte sua Prévia no App</h3>
+          <p>
+            Abra o aplicativo do seu plano de saúde (Bradesco Seguros, SulAmérica, Amil, Care Plus, Porto Seguro, Unimed, etc.) e acesse a opção <strong>"Solicitar Reembolso &gt; Consulta de Prévia"</strong>. Lá você confere o valor exato que seu contrato devolve por sessão de psicoterapia.
+          </p>
+        </article>
+
+        <article class="reembolso-card reveal">
+          <div class="reembolso-step-badge">2</div>
+          <div class="reembolso-icon">🧾</div>
+          <h3>Emissão de Recibo &amp; NF Ética</h3>
+          <p>
+            Após o atendimento, fornecemos a <strong>Nota Fiscal com CPF, CRP ativo e descrição detalhada dos honorários</strong> em conformidade com as exigências da ANS e Receita Federal (inclusive para dedução no Imposto de Renda).
+          </p>
+        </article>
+
+        <article class="reembolso-card reveal">
+          <div class="reembolso-step-badge">3</div>
+          <div class="reembolso-icon">💳</div>
+          <h3>Depósito Direto na sua Conta</h3>
+          <p>
+            Basta enviar a foto ou PDF da Nota Fiscal no aplicativo do seu convênio. O valor é creditado diretamente na sua conta bancária cadastrada no prazo estipulado pelo plano (geralmente até 30 dias).
+          </p>
+        </article>
+      </div>
+
+      <!-- Callout de apoio WhatsApp -->
+      <div class="reembolso-help-box reveal">
+        <div class="reembolso-help-text">
+          <strong>Tem dúvidas sobre como consultar o reembolso no seu convênio?</strong>
+          <p>Podemos te orientar com o passo a passo exato dentro do aplicativo do seu plano de saúde.</p>
+        </div>
+        <a class="btn btn-outline btn-md js-wa" href="https://wa.me/5511937539358?text=Ol%C3%A1%2C%20Dra.%20Thalita!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20reembolso%20do%20meu%20plano%20de%20sa%C3%BAde." target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg>
+          <span>Tirar Dúvidas sobre Reembolso</span>
+        </a>
+      </div>
+    </div>
+  </section>
   <section id="agendamento" class="section booking-section" aria-labelledby="booking-title">
     <div class="wrap stack">
       <header class="head reveal">
-        <span class="eyebrow"><svg class="ic" style="width:14px;height:14px"><use href="#i-calendar"></use></svg> Agendamento Rápido</span>
-        <h2 class="title" id="booking-title">Agende sua consulta diretamente pelo site</h2>
-        <p class="muted">Escolha sua modalidade e período de preferência. Ao confirmar, os dados são pré-registrados com confirmação imediata no WhatsApp e comprovante por e-mail:</p>
+        <span class="eyebrow"><svg class="ic" style="width:14px;height:14px"><use href="#i-calendar"></use></svg> Agendamento Clínico Inteligente</span>
+        <h2 class="title" id="booking-title">Reserve seu horário com sigilo e confirmação imediata</h2>
+        <p class="muted">Selecione sua modalidade, dia de preferência e horário exato. O sistema reserva sua vaga provisória, gera protocolo exclusivo e programa sua confirmação ética 48h antes via WhatsApp:</p>
       </header>
 
       <div class="booking-card reveal">
         <form class="booking-form" id="site-booking-form">
           
-          <!-- Passo 1: Modalidade -->
+          <!-- Passo 1: Modalidade & Foco de Apoio (Triagem Acolhedora) -->
           <div class="booking-field-group">
             <label class="booking-label">
               <span class="booking-step-num">1</span>
-              <span>Como você prefere ser atendido(a)?</span>
+              <span>Modalidade e Motivo da Consulta</span>
             </label>
             <div class="booking-options-row" role="radiogroup" aria-label="Modalidade">
               <button type="button" class="booking-opt-btn active" data-type="modalidade" data-val="Presencial no consultório (Vila Ema)" aria-checked="true">
-                <span style="font-size:20px">📍</span>
+                <span style="font-size:22px">📍</span>
                 <div>
                   <strong>Presencial</strong>
                   <div style="font-size:12px;color:var(--muted)">Consultório na Vila Ema · SP</div>
                 </div>
               </button>
               <button type="button" class="booking-opt-btn" data-type="modalidade" data-val="Online por videochamada (e-Psi)" aria-checked="false">
-                <span style="font-size:20px">💻</span>
+                <span style="font-size:22px">💻</span>
                 <div>
                   <strong>Online</strong>
                   <div style="font-size:12px;color:var(--muted)">Videochamada segura pelo e-Psi</div>
                 </div>
               </button>
             </div>
-          </div>
 
-          <!-- Passo 2: Período -->
-          <div class="booking-field-group">
-            <label class="booking-label">
-              <span class="booking-step-num">2</span>
-              <span>Qual período se encaixa melhor na sua rotina?</span>
-            </label>
-            <div class="booking-options-row" role="radiogroup" aria-label="Período">
-              <button type="button" class="booking-opt-btn" data-type="periodo" data-val="Manhã (08h às 12h)" aria-checked="false">
-                <span style="font-size:20px">☀️</span>
-                <div>
-                  <strong>Manhã</strong>
-                  <div style="font-size:12px;color:var(--muted)">08h às 12h</div>
-                </div>
-              </button>
-              <button type="button" class="booking-opt-btn active" data-type="periodo" data-val="Tarde (13h às 18h)" aria-checked="true">
-                <span style="font-size:20px">🌤️</span>
-                <div>
-                  <strong>Tarde</strong>
-                  <div style="font-size:12px;color:var(--muted)">13h às 18h</div>
-                </div>
-              </button>
-              <button type="button" class="booking-opt-btn" data-type="periodo" data-val="Noite (18h às 21h)" aria-checked="false">
-                <span style="font-size:20px">🌙</span>
-                <div>
-                  <strong>Noite</strong>
-                  <div style="font-size:12px;color:var(--muted)">18h às 21h</div>
-                </div>
-              </button>
+            <!-- Foco / Vivência Clínica Principal -->
+            <div class="booking-subgroup" style="margin-top:14px">
+              <span class="booking-sublabel" style="display:block;font-size:13.5px;color:var(--muted);margin-bottom:8px">Qual é a principal vivência ou motivo que te traz aqui?</span>
+              <div class="booking-chips-grid" id="booking-foco-chips">
+                <button type="button" class="booking-chip-btn active" data-foco="Ansiedade & Estresse">🌿 Ansiedade &amp; Estresse</button>
+                <button type="button" class="booking-chip-btn" data-foco="Esgotamento & Burnout">💼 Esgotamento &amp; Burnout</button>
+                <button type="button" class="booking-chip-btn" data-foco="Relacionamentos & Conflitos">💔 Relacionamentos</button>
+                <button type="button" class="booking-chip-btn" data-foco="Luto & Perdas Significativas">🕊️ Luto &amp; Perdas</button>
+                <button type="button" class="booking-chip-btn" data-foco="Autoconhecimento & Autoestima">🌱 Autoconhecimento</button>
+                <button type="button" class="booking-chip-btn" data-foco="Acolhimento Geral / Outros">💬 Outro Motivo</button>
+              </div>
             </div>
           </div>
 
-          <!-- Passo 3: Dados de Contato -->
+          <!-- Passo 2: Calendário Visual Interativo & Horários Específicos -->
+          <div class="booking-field-group">
+            <label class="booking-label">
+              <span class="booking-step-num">2</span>
+              <span>Escolha o Dia e o Horário da Sua Sessão</span>
+            </label>
+            
+            <div class="booking-calendar-wrapper">
+              <!-- Calendário Mensal Moderno -->
+              <div class="cal-box">
+                <div class="cal-nav">
+                  <button type="button" class="cal-nav-btn" id="cal-prev-btn" aria-label="Mês anterior">&#10094;</button>
+                  <strong class="cal-month-title" id="cal-month-title">Novembro 2026</strong>
+                  <button type="button" class="cal-nav-btn" id="cal-next-btn" aria-label="Próximo mês">&#10095;</button>
+                </div>
+                <div class="cal-weekdays">
+                  <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                </div>
+                <div class="cal-days-grid" id="cal-days-grid">
+                  <!-- Dias gerados via JS dinamicamente -->
+                </div>
+                <div class="cal-legend">
+                  <span class="cal-legend-item"><span class="dot-legend dot-active"></span> Selecionado</span>
+                  <span class="cal-legend-item"><span class="dot-legend dot-avail"></span> Disponível</span>
+                  <span class="cal-legend-item"><span class="dot-legend dot-disabled"></span> Fechado / Passado</span>
+                </div>
+              </div>
+
+              <!-- Grade de Horários por Turno -->
+              <div class="slots-box">
+                <div class="slots-header">
+                  <strong id="slots-selected-date-text">Carregando data...</strong>
+                  <span class="slots-hint" id="slots-hint">Sessão: 50 min</span>
+                </div>
+                
+                <div class="slots-turnos-wrap" id="slots-turnos-wrap">
+                  <div class="turno-group">
+                    <span class="turno-title">☀️ Manhã</span>
+                    <div class="time-chips-grid" data-turno="manha">
+                      <button type="button" class="time-chip" data-time="08:30">08:30</button>
+                      <button type="button" class="time-chip" data-time="09:30">09:30</button>
+                      <button type="button" class="time-chip" data-time="10:30">10:30</button>
+                      <button type="button" class="time-chip" data-time="11:30">11:30</button>
+                    </div>
+                  </div>
+
+                  <div class="turno-group">
+                    <span class="turno-title">🌤️ Tarde</span>
+                    <div class="time-chips-grid" data-turno="tarde">
+                      <button type="button" class="time-chip" data-time="13:30">13:30</button>
+                      <button type="button" class="time-chip active" data-time="14:30">14:30</button>
+                      <button type="button" class="time-chip" data-time="15:30">15:30</button>
+                      <button type="button" class="time-chip" data-time="16:30">16:30</button>
+                      <button type="button" class="time-chip" data-time="17:30">17:30</button>
+                    </div>
+                  </div>
+
+                  <div class="turno-group" id="turno-noite-group">
+                    <span class="turno-title">🌙 Noite</span>
+                    <div class="time-chips-grid" data-turno="noite">
+                      <button type="button" class="time-chip" data-time="18:30">18:30</button>
+                      <button type="button" class="time-chip" data-time="19:30">19:30</button>
+                      <button type="button" class="time-chip" data-time="20:30">20:30</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="reminder-callout">
+                  <span class="reminder-icon">🔔</span>
+                  <div>
+                    <strong>Lembrete Ético de 48h</strong>
+                    <p>Você receberá uma mensagem no WhatsApp 48 horas antes da consulta para confirmar sua presença ou solicitar reagendamento.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passo 3: Dados de Contato e Notificação -->
           <div class="booking-field-group">
             <label class="booking-label">
               <span class="booking-step-num">3</span>
-              <span>Seus dados para confirmação da consulta</span>
+              <span>Seus Dados para Contato e Envio do Convite</span>
             </label>
             <div class="booking-inputs-grid">
               <div class="booking-input-wrap">
                 <label for="book-name">Seu Nome Completo *</label>
-                <input class="booking-input" type="text" id="book-name" placeholder="Ex: Camila Silva" required>
+                <input class="booking-input" type="text" id="book-name" placeholder="Ex: Camila Silva" required autocomplete="name">
               </div>
               <div class="booking-input-wrap">
                 <label for="book-phone">Seu WhatsApp (com DDD) *</label>
-                <input class="booking-input" type="tel" id="book-phone" placeholder="Ex: (11) 99999-9999" required>
+                <input class="booking-input" type="tel" id="book-phone" placeholder="Ex: (11) 99999-9999" required autocomplete="tel">
               </div>
             </div>
             <div class="booking-inputs-grid" style="margin-top:10px">
               <div class="booking-input-wrap">
-                <label for="book-email">Seu E-mail (para confirmação e recibo)</label>
-                <input class="booking-input" type="email" id="book-email" placeholder="seuemail@exemplo.com">
+                <label for="book-email">Seu E-mail (para confirmação e convite de calendário) *</label>
+                <input class="booking-input" type="email" id="book-email" placeholder="seuemail@exemplo.com" required autocomplete="email">
               </div>
               <div class="booking-input-wrap">
-                <label for="book-notes">Observação ou Motivo breve (opcional)</label>
-                <input class="booking-input" type="text" id="book-notes" placeholder="Ex: Ansiedade, rotina de trabalho...">
+                <label for="book-notes">Observação breve ou preferência (opcional)</label>
+                <input class="booking-input" type="text" id="book-notes" placeholder="Ex: Preferência por videochamada Google Meet">
               </div>
+            </div>
+          </div>
+
+          <!-- Resumo em Tempo Real da Solicitação -->
+          <div class="booking-summary-pill-card" id="booking-live-summary">
+            <div class="summary-pill-header">
+              <span class="summary-status-dot"></span>
+              <strong>Resumo do seu Pré-Agendamento:</strong>
+            </div>
+            <div class="summary-pill-content">
+              <span id="live-sum-mod">Presencial na Vila Ema</span> · 
+              <span id="live-sum-date">Carregando data...</span> às 
+              <span id="live-sum-time">14:30</span> · 
+              Foco: <span id="live-sum-foco">Ansiedade &amp; Estresse</span>
             </div>
           </div>
 
           <!-- Ação de Envio -->
           <div class="booking-actions">
             <button class="btn btn-primary booking-submit-btn" type="submit" id="book-submit-btn">
-              <svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg>
-              <span>Confirmar Agendamento no WhatsApp</span>
+              <svg class="ic" aria-hidden="true"><use href="#i-calendar"></use></svg>
+              <span>Confirmar Pré-Agendamento</span>
             </button>
             <span class="booking-ethics-note">
               <svg class="ic" style="width:14px;height:14px;color:var(--accent)"><use href="#i-shield"></use></svg>
-              Atendimento com sigilo ético absoluto (CFP). Seus dados não são compartilhados.
+              Atendimento com sigilo ético absoluto (CFP). Seus dados não são compartilhados com terceiros.
             </span>
           </div>
 
@@ -411,7 +691,44 @@
     </div>
   </section>
 
-  <!-- CONSULTÓRIO & LOCALIZAÇÃO COM ROTAS (MAPS, WAZE, UBER) -->
+  <!-- POLÍTICA ÉTICA DE AGENDAMENTO, CONFIRMAÇÃO 48H E REAGENDAMENTO -->
+  <section id="politica-agendamento" class="section" aria-labelledby="politica-title">
+    <div class="wrap stack">
+      <header class="head reveal">
+        <span class="eyebrow"><svg class="ic" style="width:14px;height:14px"><use href="#i-shield"></use></svg> Compromisso Mútuo &amp; Ética</span>
+        <h2 class="title" id="politica-title">Por que solicitamos a confirmação com 48 horas de antecedência?</h2>
+        <p class="muted">
+          A psicoterapia é uma relação de confiança e respeito ao tempo. Conheça as diretrizes que tornam nossos atendimentos seguros e organizados:
+        </p>
+      </header>
+
+      <div class="politica-cards-grid">
+        <article class="politica-item-card reveal">
+          <div class="politica-item-icon">⏳</div>
+          <h3>1. Horário Exclusivamente Seu</h3>
+          <p>
+            Diferente de consultas médicas rotineiras, seus 50 minutos ficam integralmente reservados para você. A profissional não agenda outros pacientes no mesmo horário e prepara seu prontuário com total dedicação.
+          </p>
+        </article>
+
+        <article class="politica-item-card reveal">
+          <div class="politica-item-icon">🤝</div>
+          <h3>2. Respeito à Fila de Espera</h3>
+          <p>
+            Pacientes que enfrentam momentos de crise ou sofrimento agudo aguardam por horários vagos. Confirmar 48h antes (ou sinalizar que precisará remarcar) permite oferecer o horário para quem precisa de apoio imediato.
+          </p>
+        </article>
+
+        <article class="politica-item-card reveal">
+          <div class="politica-item-icon">💬</div>
+          <h3>3. Reagendamento Humanizado</h3>
+          <p>
+            Imprevistos acontecem e a vida é dinâmica. Caso precise alterar sua consulta, basta nos avisar pela mensagem de confirmação no WhatsApp com 48h de antecedência para realocarmos você sem burocracia ou cobranças punitivas.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
   <section id="consultorio" class="section" aria-labelledby="loc-title">
     <div class="wrap loc">
       <div class="loc-info reveal">
@@ -569,21 +886,46 @@
       <span>Protocolo:</span>
       <strong id="modal-proto-code">#PSI-7294</strong>
     </div>
-    <h3 class="booking-modal-title" id="modal-title">Solicitação de Consulta Pré-Registrada!</h3>
+    <h3 class="booking-modal-title" id="modal-title">Pré-Agendamento Registrado com Sucesso!</h3>
     <p class="booking-modal-desc">
-      Sua preferência de horário foi registrada no sistema. Uma mensagem foi preparada para seu WhatsApp e uma notificação de confirmação foi encaminhada.
+      Sua sessão foi reservada no sistema. Você receberá a confirmação no WhatsApp e uma notificação ética <strong>48 horas antes da consulta</strong>.
     </p>
     <div class="booking-modal-summary">
-      <div><strong>Paciente:</strong> <span id="modal-summary-name">-</span></div>
-      <div><strong>Modalidade:</strong> <span id="modal-summary-mod">-</span></div>
-      <div><strong>Período:</strong> <span id="modal-summary-per">-</span></div>
-      <div id="modal-summary-email-row" style="display:none"><strong>E-mail:</strong> <span id="modal-summary-email">-</span></div>
+      <div class="modal-summary-row"><strong>👤 Paciente:</strong> <span id="modal-summary-name">-</span></div>
+      <div class="modal-summary-row"><strong>📍 Modalidade:</strong> <span id="modal-summary-mod">-</span></div>
+      <div class="modal-summary-row"><strong>📅 Data &amp; Horário:</strong> <span id="modal-summary-datetime">-</span></div>
+      <div class="modal-summary-row"><strong>🎯 Foco Clínico:</strong> <span id="modal-summary-foco">-</span></div>
+      <div class="modal-summary-row" id="modal-summary-email-row" style="display:none"><strong>✉️ E-mail:</strong> <span id="modal-summary-email">-</span></div>
+      <div class="modal-summary-row modal-reminder-badge-row">
+        <strong>🔔 Lembrete 48h:</strong> <span>Programado via WhatsApp e Agenda</span>
+      </div>
     </div>
     <div class="booking-modal-actions">
-      <a class="btn btn-primary btn-sm" id="booking-modal-wa" href="#" target="_blank" rel="noopener">
-        <svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg>Abrir Conversa no WhatsApp
+      <!-- 1. WhatsApp Principal -->
+      <a class="btn btn-primary btn-md" id="booking-modal-wa" href="#" target="_blank" rel="noopener">
+        <svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg>
+        <span>Enviar Agendamento no WhatsApp</span>
       </a>
-      <button class="btn btn-outline btn-sm" id="booking-modal-ok" type="button">Concluir</button>
+
+      <!-- 2. Google Agenda Direto no Navegador (Sem Download) -->
+      <a class="btn btn-gcal btn-md" id="booking-modal-gcal" href="#" target="_blank" rel="noopener" title="Salvar diretamente na sua conta do Google Agenda">
+        <svg class="ic" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="18" y2="10"></line>
+        </svg>
+        <span>Salvar no Google Agenda (Abre Direto)</span>
+      </a>
+
+      <!-- 3. Apple Calendar / Outlook / Download .ICS -->
+      <button class="btn btn-ics-secondary" id="booking-modal-calendar" type="button" title="Baixar arquivo compatível com iPhone (Apple Calendar) e Outlook">
+        <svg class="ic" aria-hidden="true"><use href="#i-calendar"></use></svg>
+        <span>Salvar no iPhone / Outlook (.ics)</span>
+      </button>
+      <p class="modal-calendar-tip" id="booking-modal-tip" style="display:none; margin: 8px 0 0; font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.4;">
+        ✨ <strong>Arquivo baixado!</strong> Dê um clique no arquivo para abrir automaticamente no Apple Calendar ou Outlook com todos os dados preenchidos.
+      </p>
     </div>
   </div>
 </div>
@@ -597,12 +939,16 @@
     </div>
     <div class="footer-links">
       <a href="#para-quem">Para Quem É</a>
+      <a href="#triagem-acolhedora">Triagem Acolhedora</a>
       <a href="#sobre">Sobre Mim</a>
       <a href="#como-funciona">Como Funciona</a>
+      <a href="#reembolso">Reembolso do Plano</a>
       <a href="#agendamento">Agendamento</a>
+      <a href="#politica-agendamento">Política Ética 48h</a>
       <a href="#consultorio">Consultório</a>
       <a href="#duvidas">Dúvidas</a>
       <a href="privacidade.html">Política de Privacidade &amp; LGPD</a>
+      <a href="painel-agenda.html" style="opacity:0.85;color:var(--accent)" title="Acesso administrativo da profissional">Área da Profissional (Agenda)</a>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Thalita de Paula · Todos os direitos reservados. Atendimento psicológico ético regulamentado pelo Conselho Federal de Psicologia (CFP).</p>
