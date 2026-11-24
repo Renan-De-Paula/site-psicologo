@@ -263,6 +263,66 @@
     ultimoAgendamento: null
   };
 
+  var BACKEND_API_URL = (window.location && window.location.origin && window.location.origin.startsWith('http')) ?
+    (window.location.origin + '/api') : 'http://localhost:8080/api';
+  var isBackendOnline = false;
+
+  function verificarBackendStatus(callback) {
+    if (!window.fetch) {
+      if (callback) callback(false);
+      return;
+    }
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var tId = ctrl ? setTimeout(function(){ ctrl.abort(); }, 1500) : null;
+    fetch(BACKEND_API_URL + '/agendamentos/health', { method: 'GET', signal: ctrl ? ctrl.signal : undefined })
+      .then(function(res) {
+        if (tId) clearTimeout(tId);
+        isBackendOnline = res.ok;
+        if (callback) callback(res.ok);
+      })
+      .catch(function() {
+        if (tId) clearTimeout(tId);
+        isBackendOnline = false;
+        if (callback) callback(false);
+      });
+  }
+
+  function carregarDisponibilidadeDia(isoDate) {
+    if (!isBackendOnline || !window.fetch) return;
+    fetch(BACKEND_API_URL + '/disponibilidade/dia?data=' + encodeURIComponent(isoDate))
+      .then(function(res) { return res.ok ? res.json() : null; })
+      .then(function(data) {
+        if (!data || !data.horarios) return;
+        var ocupados = {};
+        data.horarios.forEach(function(h) {
+          if (!h.disponivel) ocupados[h.horario] = true;
+        });
+
+        var primeiroLivre = null;
+        document.querySelectorAll('.time-chip').forEach(function(chip) {
+          var h = chip.getAttribute('data-time');
+          if (ocupados[h]) {
+            chip.classList.add('disabled');
+            chip.setAttribute('title', 'Horário já reservado no banco de dados');
+            if (bookingState.horario === h) {
+              chip.classList.remove('active');
+            }
+          } else {
+            chip.classList.remove('disabled');
+            chip.removeAttribute('title');
+            if (!primeiroLivre) primeiroLivre = h;
+          }
+        });
+
+        if (ocupados[bookingState.horario] && primeiroLivre) {
+          selecionarHorario(primeiroLivre);
+        }
+      })
+      .catch(function(err) {
+        console.warn('Erro ao carregar slots da data:', err);
+      });
+  }
+
   // Encontra a primeira data útil disponível (amanhã ou próxima segunda se hoje for fim de semana)
   function obterPrimeiraDataUtil() {
     var d = new Date();
@@ -405,6 +465,7 @@
 
     atualizarTextoData();
     atualizarResumoEmTempoReal();
+    carregarDisponibilidadeDia(bookingState.dataConsulta);
   }
 
   function atualizarTextoData() {
@@ -505,6 +566,13 @@
   renderCalendar(calAno, calMes);
   atualizarTextoData();
   atualizarResumoEmTempoReal();
+
+  // Verifica status do backend Spring Boot e sincroniza disponibilidade
+  verificarBackendStatus(function(online) {
+    if (online) {
+      carregarDisponibilidadeDia(bookingState.dataConsulta);
+    }
+  });
 
   /* Máscara automática de WhatsApp (XX) XXXXX-XXXX */
   var phoneInput = document.getElementById('book-phone');
@@ -650,101 +718,146 @@
       var randomCode = Math.floor(1000 + Math.random() * 9000);
       var protocolo = '#PSI-' + randomCode;
 
-      // Cálculo da data e hora exata da consulta e do lembrete de 48h
-      var partesData = bookingState.dataConsulta.split('-');
-      var partesHora = bookingState.horario.split(':');
-      var dtConsulta = new Date(
-        parseInt(partesData[0], 10),
-        parseInt(partesData[1], 10) - 1,
-        parseInt(partesData[2], 10),
-        parseInt(partesHora[0], 10),
-        parseInt(partesHora[1], 10)
-      );
+      function finalizarAgendamento(protocoloDefinido, idBackend) {
+        // Cálculo da data e hora exata da consulta e do lembrete de 48h
+        var partesData = bookingState.dataConsulta.split('-');
+        var partesHora = bookingState.horario.split(':');
+        var dtConsulta = new Date(
+          parseInt(partesData[0], 10),
+          parseInt(partesData[1], 10) - 1,
+          parseInt(partesData[2], 10),
+          parseInt(partesHora[0], 10),
+          parseInt(partesHora[1], 10)
+        );
 
-      // 48 horas antes da consulta
-      var dtLembrete48h = new Date(dtConsulta.getTime() - (48 * 60 * 60 * 1000));
+        // 48 horas antes da consulta
+        var dtLembrete48h = new Date(dtConsulta.getTime() - (48 * 60 * 60 * 1000));
 
-      var novoAgendamento = {
-        id: 'psi_' + Date.now() + '_' + randomCode,
-        protocolo: protocolo,
-        nome: nome,
-        telefone: tel,
-        email: email,
-        notas: notas,
-        modalidade: bookingState.modalidade,
-        foco: bookingState.foco,
-        dataConsulta: bookingState.dataConsulta,
-        dataConsultaFormatada: bookingState.dataConsultaFormatada,
-        horario: bookingState.horario,
-        dtConsultaTimestamp: dtConsulta.getTime(),
-        dtLembrete48hTimestamp: dtLembrete48h.getTime(),
-        status: 'pendente_48h',
-        lembrete48hDisparado: false,
-        criadoEm: new Date().toISOString()
-      };
+        var novoAgendamento = {
+          id: idBackend || ('psi_' + Date.now() + '_' + randomCode),
+          protocolo: protocoloDefinido,
+          nome: nome,
+          telefone: tel,
+          email: email,
+          notas: notas,
+          modalidade: bookingState.modalidade,
+          foco: bookingState.foco,
+          dataConsulta: bookingState.dataConsulta,
+          dataConsultaFormatada: bookingState.dataConsultaFormatada,
+          horario: bookingState.horario,
+          dtConsultaTimestamp: dtConsulta.getTime(),
+          dtLembrete48hTimestamp: dtLembrete48h.getTime(),
+          status: 'pendente_48h',
+          lembrete48hDisparado: false,
+          criadoEm: new Date().toISOString()
+        };
 
-      bookingState.ultimoAgendamento = novoAgendamento;
+        bookingState.ultimoAgendamento = novoAgendamento;
 
-      // Salva no localStorage compartilhado para a Psicóloga gerenciar
-      try {
-        var listaSalva = JSON.parse(localStorage.getItem('psico_agendamentos') || '[]');
-        listaSalva.unshift(novoAgendamento);
-        localStorage.setItem('psico_agendamentos', JSON.stringify(listaSalva));
-      } catch (err) {
-        console.warn('Erro ao salvar no localStorage:', err);
+        // Salva cópia no localStorage compartilhado para fallback
+        try {
+          var listaSalva = JSON.parse(localStorage.getItem('psico_agendamentos') || '[]');
+          listaSalva.unshift(novoAgendamento);
+          localStorage.setItem('psico_agendamentos', JSON.stringify(listaSalva));
+        } catch (err) {
+          console.warn('Erro ao salvar no localStorage:', err);
+        }
+
+        // Monta mensagem estruturada para o WhatsApp
+        var modCurta = bookingState.modalidade.indexOf('Presencial') !== -1 ? 'Presencial (Vila Ema)' : 'Online (e-Psi)';
+        var waMsg = 'Olá, Dra. Thalita! Realizei um pré-agendamento pelo site.\n\n' +
+          '• Paciente: ' + nome + '\n' +
+          '• Modalidade: ' + modCurta + '\n' +
+          '• Data: ' + bookingState.dataConsultaFormatada + '\n' +
+          '• Horário: ' + bookingState.horario + '\n' +
+          '• Foco de Apoio: ' + bookingState.foco + '\n' +
+          '• Protocolo: ' + protocoloDefinido + '\n' +
+          '• WhatsApp: ' + tel + '\n' +
+          '• E-mail: ' + email +
+          (notas ? '\n• Observação: ' + notas : '') +
+          '\n\n*Aviso: Estou ciente da confirmação ética 48h antes via WhatsApp. Obrigado(a)!*';
+
+        var waUrl = 'https://wa.me/' + NUMERO + '?text=' + encodeURIComponent(waMsg);
+
+        // Preenche os dados no modal
+        document.getElementById('modal-proto-code').textContent = protocoloDefinido;
+        document.getElementById('modal-summary-name').textContent = nome;
+        document.getElementById('modal-summary-mod').textContent = modCurta;
+        document.getElementById('modal-summary-datetime').textContent = bookingState.dataConsultaFormatada.split(', ')[1] + ' às ' + bookingState.horario;
+        document.getElementById('modal-summary-foco').textContent = bookingState.foco;
+        document.getElementById('modal-summary-email').textContent = email;
+        document.getElementById('modal-summary-email-row').style.display = 'flex';
+
+        if (bookingModalWa) bookingModalWa.href = waUrl;
+        if (bookingModalGcal) bookingModalGcal.href = obterLinkGoogleCalendar(novoAgendamento);
+
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+
+        if (bookingModal) {
+          bookingModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
       }
 
-      // Monta mensagem estruturada para o WhatsApp
-      var modCurta = bookingState.modalidade.indexOf('Presencial') !== -1 ? 'Presencial (Vila Ema)' : 'Online (e-Psi)';
-      var waMsg = 'Olá, Dra. Thalita! Realizei um pré-agendamento pelo site.\n\n' +
-        '• Paciente: ' + nome + '\n' +
-        '• Modalidade: ' + modCurta + '\n' +
-        '• Data: ' + bookingState.dataConsultaFormatada + '\n' +
-        '• Horário: ' + bookingState.horario + '\n' +
-        '• Foco de Apoio: ' + bookingState.foco + '\n' +
-        '• Protocolo: ' + protocolo + '\n' +
-        '• WhatsApp: ' + tel + '\n' +
-        '• E-mail: ' + email +
-        (notas ? '\n• Observação: ' + notas : '') +
-        '\n\n*Aviso: Estou ciente da confirmação ética 48h antes via WhatsApp. Obrigado(a)!*';
+      // Se o backend Spring Boot estiver online, persiste diretamente no banco H2
+      if (isBackendOnline && window.fetch) {
+        var payload = {
+          nome: nome,
+          telefone: tel,
+          email: email,
+          modalidade: bookingState.modalidade.indexOf('Presencial') !== -1 ? 'presencial' : 'online',
+          foco: bookingState.foco,
+          dataConsulta: bookingState.dataConsulta,
+          horario: bookingState.horario,
+          notas: notas
+        };
 
-      var waUrl = 'https://wa.me/' + NUMERO + '?text=' + encodeURIComponent(waMsg);
-
-      // Preenche os dados no modal
-      document.getElementById('modal-proto-code').textContent = protocolo;
-      document.getElementById('modal-summary-name').textContent = nome;
-      document.getElementById('modal-summary-mod').textContent = modCurta;
-      document.getElementById('modal-summary-datetime').textContent = bookingState.dataConsultaFormatada.split(', ')[1] + ' às ' + bookingState.horario;
-      document.getElementById('modal-summary-foco').textContent = bookingState.foco;
-      document.getElementById('modal-summary-email').textContent = email;
-      document.getElementById('modal-summary-email-row').style.display = 'flex';
-
-      // Link do botão WhatsApp
-      if (bookingModalWa) {
-        bookingModalWa.href = waUrl;
-      }
-
-      // Link direto do Google Calendar Web
-      if (bookingModalGcal) {
-        bookingModalGcal.href = obterLinkGoogleCalendar(novoAgendamento);
-      }
-
-      // Abre WhatsApp em nova aba
-      window.open(waUrl, '_blank', 'noopener,noreferrer');
-
-      // Exibe modal na tela
-      if (bookingModal) {
-        bookingModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        fetch(BACKEND_API_URL + '/agendamentos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(function(res) {
+          if (res.status === 201) {
+            return res.json().then(function(item) {
+              finalizarAgendamento(item.protocolo, item.id);
+              carregarDisponibilidadeDia(bookingState.dataConsulta);
+            });
+          } else if (res.status === 409) {
+            return res.json().then(function(prob) {
+              alert(prob.detail || 'Horário já reservado por outro paciente. Por favor escolha outro horário.');
+              carregarDisponibilidadeDia(bookingState.dataConsulta);
+            });
+          } else {
+            return res.json().then(function(prob) {
+              alert(prob.detail || 'Não foi possível concluir o agendamento.');
+            });
+          }
+        })
+        .catch(function(err) {
+          console.warn('Erro na requisição ao backend Spring Boot, utilizando modo local:', err);
+          finalizarAgendamento(protocolo, null);
+        });
+      } else {
+        // Modo LocalStorage Offline
+        finalizarAgendamento(protocolo, null);
       }
     });
   }
 
-  // Ação de download do .ics pelo modal
+  // Ação de download do .ics pelo modal com feedback visual
   if (bookingModalCal) {
     bookingModalCal.addEventListener('click', function(){
       if (bookingState.ultimoAgendamento) {
         gerarArquivoICS(bookingState.ultimoAgendamento);
+        var tip = document.getElementById('booking-modal-tip');
+        if (tip) tip.style.display = 'block';
+
+        var origText = bookingModalCal.innerHTML;
+        bookingModalCal.innerHTML = '<svg class="ic" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Arquivo .ics baixado!</span>';
+        setTimeout(function() {
+          bookingModalCal.innerHTML = origText;
+        }, 4000);
       } else {
         alert('Nenhum agendamento ativo encontrado.');
       }

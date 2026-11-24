@@ -901,17 +901,31 @@
       </div>
     </div>
     <div class="booking-modal-actions">
+      <!-- 1. WhatsApp Principal -->
       <a class="btn btn-primary btn-md" id="booking-modal-wa" href="#" target="_blank" rel="noopener">
         <svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg>
         <span>Enviar Agendamento no WhatsApp</span>
       </a>
-      <button class="btn btn-outline btn-md" id="booking-modal-calendar" type="button">
-        <svg class="ic" aria-hidden="true"><use href="#i-calendar"></use></svg>
-        <span>Adicionar à Minha Agenda (.ics)</span>
-      </button>
-      <a class="modal-gcal-link" id="booking-modal-gcal" href="#" target="_blank" rel="noopener">
-        Abrir no Google Calendar Web &rarr;
+
+      <!-- 2. Google Agenda Direto no Navegador (Sem Download) -->
+      <a class="btn btn-gcal btn-md" id="booking-modal-gcal" href="#" target="_blank" rel="noopener" title="Salvar diretamente na sua conta do Google Agenda">
+        <svg class="ic" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="18" y2="10"></line>
+        </svg>
+        <span>Salvar no Google Agenda (Abre Direto)</span>
       </a>
+
+      <!-- 3. Apple Calendar / Outlook / Download .ICS -->
+      <button class="btn btn-ics-secondary" id="booking-modal-calendar" type="button" title="Baixar arquivo compatível com iPhone (Apple Calendar) e Outlook">
+        <svg class="ic" aria-hidden="true"><use href="#i-calendar"></use></svg>
+        <span>Salvar no iPhone / Outlook (.ics)</span>
+      </button>
+      <p class="modal-calendar-tip" id="booking-modal-tip" style="display:none; margin: 8px 0 0; font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.4;">
+        ✨ <strong>Arquivo baixado!</strong> Dê um clique no arquivo para abrir automaticamente no Apple Calendar ou Outlook com todos os dados preenchidos.
+      </p>
     </div>
   </div>
 </div>

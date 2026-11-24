@@ -7,6 +7,9 @@
   'use strict';
 
   var STORAGE_KEY = 'psico_agendamentos';
+  var BACKEND_API_URL = (window.location && window.location.origin && window.location.origin.startsWith('http')) ?
+    (window.location.origin + '/api') : 'http://localhost:8080/api';
+  var isBackendOnline = false;
   var agendamentos = [];
   var filtroAtual = 'todos';
   var termoBusca = '';
@@ -24,6 +27,20 @@
   var elSearch = document.getElementById('input-search');
   var elFilterTabs = document.querySelectorAll('.filter-tab');
   var elClock = document.getElementById('live-clock');
+  var elBackendBadge = document.getElementById('backend-status-badge');
+
+  function atualizarBadgeBackend(online) {
+    if (!elBackendBadge) return;
+    if (online) {
+      elBackendBadge.className = 'backend-badge online';
+      elBackendBadge.innerHTML = '<span class="badge-dot"></span> <span class="badge-text">Spring Boot Ativo (H2 DB)</span>';
+      elBackendBadge.title = 'Conectado à API Spring Boot com persistência em banco H2';
+    } else {
+      elBackendBadge.className = 'backend-badge offline';
+      elBackendBadge.innerHTML = '<span class="badge-dot"></span> <span class="badge-text">Modo Local (Offline)</span>';
+      elBackendBadge.title = 'Operando localmente via LocalStorage do navegador';
+    }
+  }
 
   // Relógio do cabeçalho
   function iniciarRelogio() {
@@ -37,7 +54,7 @@
     setInterval(atualizar, 30000);
   }
 
-  // Carrega agendamentos do LocalStorage
+  // Carrega agendamentos do LocalStorage com sincronização da API Spring Boot
   function carregarDoStorage() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -49,6 +66,93 @@
       console.error('Erro ao ler localStorage:', e);
       agendamentos = [];
     }
+
+    // Tenta sincronizar com o backend Spring Boot em segundo plano
+    sincronizarComBackend();
+  }
+
+  function converterBackendParaLocal(b) {
+    var partesD = (b.dataConsulta || '').split('-');
+    var partesH = (b.horario || '').split(':');
+    var dtTimestamp = null;
+    var dtLembrete = null;
+    var dataFmt = b.dataConsulta;
+
+    if (partesD.length === 3 && partesH.length >= 2) {
+      var d = new Date(
+        parseInt(partesD[0], 10),
+        parseInt(partesD[1], 10) - 1,
+        parseInt(partesD[2], 10),
+        parseInt(partesH[0], 10),
+        parseInt(partesH[1], 10)
+      );
+      dtTimestamp = d.getTime();
+      dtLembrete = dtTimestamp - (48 * 60 * 60 * 1000);
+
+      var mesesPt = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      var diasSemanaPt = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+      dataFmt = diasSemanaPt[d.getDay()] + ', ' + d.getDate() + ' de ' + mesesPt[d.getMonth()] + ' de ' + d.getFullYear();
+    }
+
+    var statusNormalizado = 'pendente_48h';
+    if (b.status === 'CONFIRMADO') statusNormalizado = 'confirmado';
+    else if (b.status === 'CONCLUIDO') statusNormalizado = 'concluido';
+    else if (b.status === 'CANCELADO') statusNormalizado = 'cancelado';
+    else if (b.lembrete48hEnviado) statusNormalizado = 'lembrete_enviado';
+
+    return {
+      id: b.id,
+      protocolo: b.protocolo,
+      nome: b.nome,
+      telefone: b.telefone,
+      email: b.email,
+      modalidade: b.modalidade === 'presencial' ? 'Presencial no consultório (Vila Ema)' : 'Online por videochamada',
+      foco: b.foco,
+      dataConsulta: b.dataConsulta,
+      dataConsultaFormatada: dataFmt,
+      horario: b.horario,
+      notas: b.notas || '',
+      dtConsultaTimestamp: dtTimestamp,
+      dtLembrete48hTimestamp: dtLembrete,
+      status: statusNormalizado,
+      lembrete48hDisparado: b.lembrete48hEnviado,
+      criadoEm: b.criadoEm,
+      lembreteDisparadoEm: b.lembreteDisparadoEm
+    };
+  }
+
+  function sincronizarComBackend() {
+    if (!window.fetch) {
+      atualizarBadgeBackend(false);
+      return;
+    }
+
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var tId = ctrl ? setTimeout(function(){ ctrl.abort(); }, 2000) : null;
+
+    fetch(BACKEND_API_URL + '/agendamentos', { method: 'GET', signal: ctrl ? ctrl.signal : undefined })
+      .then(function(res) {
+        if (tId) clearTimeout(tId);
+        if (res.ok) {
+          return res.json().then(function(lista) {
+            isBackendOnline = true;
+            atualizarBadgeBackend(true);
+            if (Array.isArray(lista) && lista.length > 0) {
+              agendamentos = lista.map(converterBackendParaLocal);
+              salvarNoStorage();
+              atualizarInterface();
+            }
+          });
+        } else {
+          isBackendOnline = false;
+          atualizarBadgeBackend(false);
+        }
+      })
+      .catch(function(err) {
+        if (tId) clearTimeout(tId);
+        isBackendOnline = false;
+        atualizarBadgeBackend(false);
+      });
   }
 
   // Salva no LocalStorage
@@ -386,6 +490,10 @@
       item.status = 'lembrete_enviado';
     }
 
+    if (isBackendOnline && typeof id === 'number') {
+      fetch(BACKEND_API_URL + '/agendamentos/' + id + '/lembrete', { method: 'POST' }).catch(console.warn);
+    }
+
     salvarNoStorage();
     atualizarInterface();
     exibirToast('Lembrete de 48h aberto no WhatsApp e registrado com sucesso!', 'success');
@@ -428,6 +536,22 @@
       exibirToast('Agendamento de ' + item.nome + ' cancelado.', 'warn');
     }
 
+    if (isBackendOnline && typeof id === 'number') {
+      var statusMap = {
+        'confirmado': 'CONFIRMADO',
+        'concluido': 'CONCLUIDO',
+        'cancelado': 'CANCELADO',
+        'pendente_48h': 'PENDENTE_48H'
+      };
+      if (statusMap[novoStatus]) {
+        fetch(BACKEND_API_URL + '/agendamentos/' + id + '/status', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: statusMap[novoStatus] })
+        }).catch(console.warn);
+      }
+    }
+
     salvarNoStorage();
     atualizarInterface();
   }
@@ -439,6 +563,10 @@
 
     var ok = confirm('Tem certeza que deseja excluir o registro de ' + item.nome + ' (' + item.protocolo + ')?');
     if (!ok) return;
+
+    if (isBackendOnline && typeof id === 'number') {
+      fetch(BACKEND_API_URL + '/agendamentos/' + id, { method: 'DELETE' }).catch(console.warn);
+    }
 
     agendamentos = agendamentos.filter(function (a) { return a.id !== id; });
     salvarNoStorage();
@@ -567,30 +695,72 @@
       var diasSemanaPt = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
       var randomCode = Math.floor(1000 + Math.random() * 9000);
 
-      var novo = {
-        id: 'psi_' + Date.now() + '_' + randomCode,
-        protocolo: '#PSI-' + randomCode,
-        nome: nome,
-        telefone: tel,
-        email: email,
-        notas: notas,
-        modalidade: mod,
-        foco: foco,
-        dataConsulta: data,
-        dataConsultaFormatada: diasSemanaPt[d.getDay()] + ', ' + d.getDate() + ' de ' + mesesPt[d.getMonth()] + ' de ' + d.getFullYear(),
-        horario: hora,
-        dtConsultaTimestamp: d.getTime(),
-        dtLembrete48hTimestamp: d.getTime() - (48 * 60 * 60 * 1000),
-        status: 'pendente_48h',
-        lembrete48hDisparado: false,
-        criadoEm: new Date().toISOString()
-      };
+      function persistirLocal(proto, backendId) {
+        var novo = {
+          id: backendId || ('psi_' + Date.now() + '_' + randomCode),
+          protocolo: proto || ('#PSI-' + randomCode),
+          nome: nome,
+          telefone: tel,
+          email: email,
+          notas: notas,
+          modalidade: mod,
+          foco: foco,
+          dataConsulta: data,
+          dataConsultaFormatada: diasSemanaPt[d.getDay()] + ', ' + d.getDate() + ' de ' + mesesPt[d.getMonth()] + ' de ' + d.getFullYear(),
+          horario: hora,
+          dtConsultaTimestamp: d.getTime(),
+          dtLembrete48hTimestamp: d.getTime() - (48 * 60 * 60 * 1000),
+          status: 'pendente_48h',
+          lembrete48hDisparado: false,
+          criadoEm: new Date().toISOString()
+        };
 
-      agendamentos.push(novo);
-      salvarNoStorage();
-      fecharModalNovo();
-      atualizarInterface();
-      exibirToast('Novo agendamento criado com sucesso!', 'success');
+        agendamentos.unshift(novo);
+        salvarNoStorage();
+        fecharModalNovo();
+        atualizarInterface();
+        exibirToast('Novo agendamento criado com sucesso (' + novo.protocolo + ')!', 'success');
+      }
+
+      if (isBackendOnline && window.fetch) {
+        var payload = {
+          nome: nome,
+          telefone: tel,
+          email: email || 'paciente@consultorio.com',
+          modalidade: mod.indexOf('Presencial') !== -1 ? 'presencial' : 'online',
+          foco: foco,
+          dataConsulta: data,
+          horario: hora,
+          notas: notas
+        };
+
+        fetch(BACKEND_API_URL + '/agendamentos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(function(res) {
+          if (res.status === 201) {
+            return res.json().then(function(item) {
+              persistirLocal(item.protocolo, item.id);
+            });
+          } else if (res.status === 409) {
+            return res.json().then(function(prob) {
+              alert(prob.detail || 'Horário já reservado no banco de dados. Escolha outro horário.');
+            });
+          } else {
+            return res.json().then(function(prob) {
+              alert(prob.detail || 'Erro ao salvar agendamento no servidor.');
+            });
+          }
+        })
+        .catch(function(err) {
+          console.warn('Erro na requisição ao backend Spring Boot:', err);
+          persistirLocal(null, null);
+        });
+      } else {
+        persistirLocal(null, null);
+      }
     });
   }
 
