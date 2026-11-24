@@ -287,7 +287,38 @@
       });
   }
 
+  function aplicarOcupacaoChips(ocupados) {
+    var primeiroLivre = null;
+    document.querySelectorAll('.time-chip').forEach(function(chip) {
+      var h = chip.getAttribute('data-time');
+      if (ocupados && ocupados[h]) {
+        chip.classList.add('disabled');
+        chip.setAttribute('title', 'Horário já reservado no banco de dados');
+        if (bookingState.horario === h) {
+          chip.classList.remove('active');
+        }
+      } else {
+        chip.classList.remove('disabled');
+        chip.removeAttribute('title');
+        if (!primeiroLivre) primeiroLivre = h;
+      }
+    });
+
+    if (ocupados && ocupados[bookingState.horario] && primeiroLivre) {
+      selecionarHorario(primeiroLivre);
+    }
+  }
+
   function carregarDisponibilidadeDia(isoDate) {
+    // 1. Escuta em tempo real via Cloud Firestore (Serverless Firebase)
+    if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+      FirestoreService.escutarOcupacaoDia(isoDate, function(ocupados) {
+        aplicarOcupacaoChips(ocupados);
+      });
+      return;
+    }
+
+    // 2. Fallback para API Spring Boot (H2) se estiver rodando localmente
     if (!isBackendOnline || !window.fetch) return;
     fetch(BACKEND_API_URL + '/disponibilidade/dia?data=' + encodeURIComponent(isoDate))
       .then(function(res) { return res.ok ? res.json() : null; })
@@ -297,26 +328,7 @@
         data.horarios.forEach(function(h) {
           if (!h.disponivel) ocupados[h.horario] = true;
         });
-
-        var primeiroLivre = null;
-        document.querySelectorAll('.time-chip').forEach(function(chip) {
-          var h = chip.getAttribute('data-time');
-          if (ocupados[h]) {
-            chip.classList.add('disabled');
-            chip.setAttribute('title', 'Horário já reservado no banco de dados');
-            if (bookingState.horario === h) {
-              chip.classList.remove('active');
-            }
-          } else {
-            chip.classList.remove('disabled');
-            chip.removeAttribute('title');
-            if (!primeiroLivre) primeiroLivre = h;
-          }
-        });
-
-        if (ocupados[bookingState.horario] && primeiroLivre) {
-          selecionarHorario(primeiroLivre);
-        }
+        aplicarOcupacaoChips(ocupados);
       })
       .catch(function(err) {
         console.warn('Erro ao carregar slots da data:', err);
@@ -799,8 +811,34 @@
         }
       }
 
-      // Se o backend Spring Boot estiver online, persiste diretamente no banco H2
-      if (isBackendOnline && window.fetch) {
+      // 1. Prioridade Serverless: Cloud Firestore (Firebase)
+      if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+        var agendamentoObj = {
+          protocolo: protocolo,
+          nome: nome,
+          telefone: tel,
+          email: email,
+          modalidade: bookingState.modalidade,
+          foco: bookingState.foco,
+          dataConsulta: bookingState.dataConsulta,
+          dataConsultaFormatada: bookingState.dataConsultaFormatada,
+          horario: bookingState.horario,
+          notas: notas
+        };
+
+        FirestoreService.criarAgendamento(
+          agendamentoObj,
+          function(docId) {
+            finalizarAgendamento(protocolo, docId);
+            carregarDisponibilidadeDia(bookingState.dataConsulta);
+          },
+          function(erroMsg) {
+            alert(erroMsg || 'Horário indisponível no momento. Por favor selecione outro horário.');
+            carregarDisponibilidadeDia(bookingState.dataConsulta);
+          }
+        );
+      } else if (isBackendOnline && window.fetch) {
+        // 2. Fallback para API Spring Boot (H2) se estiver rodando localmente
         var payload = {
           nome: nome,
           telefone: tel,
@@ -839,7 +877,7 @@
           finalizarAgendamento(protocolo, null);
         });
       } else {
-        // Modo LocalStorage Offline
+        // 3. Modo LocalStorage Offline
         finalizarAgendamento(protocolo, null);
       }
     });

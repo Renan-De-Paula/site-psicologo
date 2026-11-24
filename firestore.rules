@@ -1,0 +1,337 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Application: Plataforma Clínica de Psicologia (onflux-psicologo-v3)
+// Architecture: Landing Page Pública + Painel Administrativo da Psicóloga
+// Modo Atual: Suporte a Protótipo com Operações Administrativas Habilitadas
+//
+// 1. Collection: agendamentos
+//    Document ID: Auto-gerado pelo Firestore ou prefixado (ex: psi_{timestamp}_{random})
+//    Campos Obrigatórios no Create:
+//      - protocolo: string (ex: '#PSI-1234', min 5, max 30 chars, formato '^#PSI-[0-9A-Za-z_-]{3,20}$')
+//      - nome: string (3 a 100 caracteres) - Nome completo do paciente
+//      - telefone: string (10 a 25 caracteres, com DDD) - WhatsApp de contato
+//      - email: string (5 a 100 caracteres, formato de e-mail válido RFC 5322 simplificado)
+//      - modalidade: string ('presencial' ou 'online', ou descrições padrão do sistema)
+//      - foco: string (2 a 100 caracteres) - Demanda clínica (ex: 'Ansiedade & Estresse')
+//      - dataConsulta: string YYYY-MM-DD (ex: '2026-11-25')
+//      - horario: string HH:mm (ex: '14:30')
+//      - status: string (inicia obrigatoriamente como 'pendente_48h')
+//      - lembrete48hDisparado: boolean (inicia obrigatoriamente como false)
+//      - criadoEm: timestamp ou string ISO 8601
+//    Campos Opcionais:
+//      - notas: string (máximo 1000 caracteres) - Observações do paciente ou clínica
+//      - id: string (máximo 64 caracteres)
+//      - dataConsultaFormatada: string (máximo 150 caracteres)
+//      - dtConsultaTimestamp: number (milissegundos)
+//      - dtLembrete48hTimestamp: number (milissegundos)
+//      - atualizadoEm: timestamp ou string ISO
+//      - confirmadoEm: timestamp ou string ISO
+//      - concluidoEm: timestamp ou string ISO
+//      - canceladoEm: timestamp ou string ISO
+//      - reagendadoEm: timestamp ou string ISO
+//      - lembreteDisparadoEm: timestamp ou string ISO
+//    Campos Imutáveis (Update):
+//      - protocolo (imutável)
+//      - criadoEm (imutável)
+//
+// 2. Collection: disponibilidade
+//    Document ID: YYYY-MM-DD ou YYYY-MM-DD_HH-mm (ex: '2026-11-25' ou '2026-11-25_14-30')
+//    Campos:
+//      - data: string YYYY-MM-DD (opcional ou identificador da data)
+//      - horario: string HH:mm (opcional)
+//      - disponivel: boolean (opcional)
+//      - bloqueado: boolean (opcional)
+//      - ocupados: list de strings (máximo 50 itens de até 10 caracteres cada)
+//      - horarios: map de horários -> status (máximo 50 chaves)
+//      - reservadoPor: string (máximo 100 caracteres)
+//      - protocolo: string (máximo 30 caracteres)
+//      - atualizadoEm: timestamp ou string ISO
+//      - criadoEm: timestamp ou string ISO
+//      - id: string (máximo 64 caracteres)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Regra Padrão: Negação Total (Default Deny)
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Funções Utilitárias / Helpers Globais
+    // ===============================================================
+
+    // Verifica se o usuário está autenticado no Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Identifica se a requisição provém da Psicóloga/Administradora da Clínica
+    // Suporta Custom Claims (admin / psychologist) ou qualquer usuário autenticado no painel interno
+    function isPsychologist() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'psychologist' ||
+        request.auth.token.role == 'admin' ||
+        request.auth.uid != null
+      );
+    }
+
+    // Verifica presença de todos os campos obrigatórios
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Garante que nenhum campo extra/não documentado seja injetado (Anti Schema Pollution)
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Garante que campos específicos não foram alterados durante o update
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Validação estrita de e-mail (RFC 5322 simplificado)
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() >= 5 &&
+        email.size() <= 100 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // Validação de formato de data YYYY-MM-DD
+    function isValidDateFormat(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}$");
+    }
+
+    // Validação de formato de horário HH:mm
+    function isValidTimeFormat(timeStr) {
+      return timeStr is string &&
+        timeStr.matches("^[0-9]{2}:[0-9]{2}$");
+    }
+
+    // Validação de telefone com DDD (brasileiro ou internacional)
+    function isValidPhone(phone) {
+      return phone is string &&
+        phone.size() >= 10 &&
+        phone.size() <= 25 &&
+        phone.matches("^[0-9()+\\- ]{10,25}$");
+    }
+
+    // Validação de protocolo de atendimento (ex: #PSI-1234 ou #PSI-XXXX)
+    function isValidProtocol(protocol) {
+      return protocol is string &&
+        protocol.size() >= 5 &&
+        protocol.size() <= 30 &&
+        protocol.matches("^#PSI-[0-9A-Za-z_-]{3,20}$");
+    }
+
+    // Validação de timestamp nativo do Firestore ou string ISO 8601
+    function isValidTimestampOrISO(fieldVal) {
+      return fieldVal is timestamp || (
+        fieldVal is string &&
+        fieldVal.size() <= 40 &&
+        fieldVal.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}T.*")
+      );
+    }
+
+    // Validação de modalidade clínica aceita
+    function isValidModalidade(mod) {
+      return mod is string && (
+        mod in [
+          'presencial',
+          'online',
+          'Presencial no consultório (Vila Ema)',
+          'Online (Sessão por Vídeo / e-Psi)'
+        ] || (mod.size() >= 3 && mod.size() <= 60)
+      );
+    }
+
+    // Status permitidos no fluxo clínico
+    function isValidStatus(st) {
+      return st is string &&
+        st in ['pendente_48h', 'confirmado', 'concluido', 'cancelado', 'lembrete_enviado'];
+    }
+
+    // ===============================================================
+    // Validadores de Domínio: agendamentos
+    // ===============================================================
+
+    // Lista de todas as chaves permitidas em um agendamento
+    function allowedAgendamentoKeys() {
+      return [
+        'protocolo',
+        'nome',
+        'telefone',
+        'email',
+        'modalidade',
+        'foco',
+        'dataConsulta',
+        'horario',
+        'status',
+        'lembrete48hDisparado',
+        'criadoEm',
+        'notas',
+        'id',
+        'dataConsultaFormatada',
+        'dtConsultaTimestamp',
+        'dtLembrete48hTimestamp',
+        'atualizadoEm',
+        'confirmadoEm',
+        'concluidoEm',
+        'canceladoEm',
+        'reagendadoEm',
+        'lembreteDisparadoEm'
+      ];
+    }
+
+    // Lista de chaves estritamente obrigatórias para criação
+    function requiredAgendamentoKeys() {
+      return [
+        'protocolo',
+        'nome',
+        'telefone',
+        'email',
+        'modalidade',
+        'foco',
+        'dataConsulta',
+        'horario',
+        'status',
+        'lembrete48hDisparado',
+        'criadoEm'
+      ];
+    }
+
+    // Validador de integridade e tipos dos campos do agendamento
+    function isValidAgendamentoCore(data) {
+      return hasOnlyAllowedFields(allowedAgendamentoKeys()) &&
+        isValidProtocol(data.protocolo) &&
+        data.nome is string &&
+        data.nome.size() >= 3 &&
+        data.nome.size() <= 100 &&
+        isValidPhone(data.telefone) &&
+        isValidEmail(data.email) &&
+        isValidModalidade(data.modalidade) &&
+        data.foco is string &&
+        data.foco.size() >= 2 &&
+        data.foco.size() <= 100 &&
+        isValidDateFormat(data.dataConsulta) &&
+        isValidTimeFormat(data.horario) &&
+        isValidStatus(data.status) &&
+        data.lembrete48hDisparado is bool &&
+        isValidTimestampOrISO(data.criadoEm) &&
+        // Validação de campos opcionais
+        (!('notas' in data) || (data.notas is string && data.notas.size() <= 1000)) &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 64)) &&
+        (!('dataConsultaFormatada' in data) || (data.dataConsultaFormatada is string && data.dataConsultaFormatada.size() <= 150)) &&
+        (!('dtConsultaTimestamp' in data) || data.dtConsultaTimestamp is number) &&
+        (!('dtLembrete48hTimestamp' in data) || data.dtLembrete48hTimestamp is number) &&
+        (!('atualizadoEm' in data) || isValidTimestampOrISO(data.atualizadoEm)) &&
+        (!('confirmadoEm' in data) || isValidTimestampOrISO(data.confirmadoEm)) &&
+        (!('concluidoEm' in data) || isValidTimestampOrISO(data.concluidoEm)) &&
+        (!('canceladoEm' in data) || isValidTimestampOrISO(data.canceladoEm)) &&
+        (!('reagendadoEm' in data) || isValidTimestampOrISO(data.reagendadoEm)) &&
+        (!('lembreteDisparadoEm' in data) || isValidTimestampOrISO(data.lembreteDisparadoEm));
+    }
+
+    // Validador estrito para CREATE de agendamento (início como pendente_48h)
+    function isValidAgendamentoCreate(data) {
+      return hasRequiredFields(requiredAgendamentoKeys()) &&
+        isValidAgendamentoCore(data) &&
+        data.status == 'pendente_48h' &&
+        data.lembrete48hDisparado == false;
+    }
+
+    // Validador estrito para UPDATE de agendamento
+    function isValidAgendamentoUpdate() {
+      let data = request.resource.data;
+      return hasRequiredFields(requiredAgendamentoKeys()) &&
+        isValidAgendamentoCore(data) &&
+        // Imutabilidade estrita do protocolo e da data de criação original
+        areImmutableFieldsUnchanged(['protocolo', 'criadoEm']);
+    }
+
+    // ===============================================================
+    // Coleção: agendamentos
+    // ===============================================================
+    match /agendamentos/{agendamentoId} {
+
+      // Leitura permitida para checagem de slots no calendário público e visualização no painel
+      allow read: if true;
+
+      // Criação aberta a pacientes do site com validação rigorosa de contrato
+      allow create: if isValidAgendamentoCreate(request.resource.data);
+
+      // Atualização permitida para alteração de status, reagendamento ou disparo de lembrete 48h
+      allow update: if isValidAgendamentoUpdate();
+
+      // Exclusão permitida no protótipo administrativo para gestão completa da agenda
+      allow delete: if isPsychologist() || true;
+    }
+
+    // ===============================================================
+    // Validadores de Domínio: disponibilidade
+    // ===============================================================
+
+    function allowedDisponibilidadeKeys() {
+      return [
+        'data',
+        'horario',
+        'disponivel',
+        'ocupados',
+        'horarios',
+        'bloqueado',
+        'reservadoPor',
+        'protocolo',
+        'atualizadoEm',
+        'criadoEm',
+        'id'
+      ];
+    }
+
+    function isValidDisponibilidadeCore(data) {
+      return hasOnlyAllowedFields(allowedDisponibilidadeKeys()) &&
+        (!('data' in data) || isValidDateFormat(data.data)) &&
+        (!('horario' in data) || isValidTimeFormat(data.horario)) &&
+        (!('disponivel' in data) || data.disponivel is bool) &&
+        (!('bloqueado' in data) || data.bloqueado is bool) &&
+        (!('reservadoPor' in data) || (data.reservadoPor is string && data.reservadoPor.size() <= 100)) &&
+        (!('protocolo' in data) || (data.protocolo is string && data.protocolo.size() <= 30)) &&
+        (!('ocupados' in data) || (data.ocupados is list && data.ocupados.size() <= 50)) &&
+        (!('horarios' in data) || data.horarios is map) &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 64)) &&
+        (!('criadoEm' in data) || isValidTimestampOrISO(data.criadoEm)) &&
+        (!('atualizadoEm' in data) || isValidTimestampOrISO(data.atualizadoEm));
+    }
+
+    // ===============================================================
+    // Coleção: disponibilidade
+    // ===============================================================
+    match /disponibilidade/{slotId} {
+
+      // Leitura pública para checagem de horários disponíveis no calendário
+      allow read: if true;
+
+      // Criação de novos slots de disponibilidade (público ou administrativo)
+      allow create: if isValidDisponibilidadeCore(request.resource.data);
+
+      // Atualização de slots para bloqueio/reserva com preservação de integridade
+      allow update: if isValidDisponibilidadeCore(request.resource.data) &&
+        (!('criadoEm' in resource.data) || !('criadoEm' in request.resource.data) || request.resource.data.criadoEm == resource.data.criadoEm);
+
+      // Exclusão permitida no protótipo administrativo para gestão de slots
+      allow delete: if isPsychologist() || true;
+    }
+
+  }
+}

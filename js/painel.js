@@ -29,9 +29,13 @@
   var elClock = document.getElementById('live-clock');
   var elBackendBadge = document.getElementById('backend-status-badge');
 
-  function atualizarBadgeBackend(online) {
+  function atualizarBadgeBackend(statusOuModo) {
     if (!elBackendBadge) return;
-    if (online) {
+    if (statusOuModo === 'firestore') {
+      elBackendBadge.className = 'backend-badge online';
+      elBackendBadge.innerHTML = '<span class="badge-dot" style="background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.6)"></span> <span class="badge-text">Firebase Firestore (Serverless)</span>';
+      elBackendBadge.title = 'Sincronização em tempo real ativa com Google Cloud Firestore';
+    } else if (statusOuModo === true || statusOuModo === 'springboot') {
       elBackendBadge.className = 'backend-badge online';
       elBackendBadge.innerHTML = '<span class="badge-dot"></span> <span class="badge-text">Spring Boot Ativo (H2 DB)</span>';
       elBackendBadge.title = 'Conectado à API Spring Boot com persistência em banco H2';
@@ -54,7 +58,51 @@
     setInterval(atualizar, 30000);
   }
 
-  // Carrega agendamentos do LocalStorage com sincronização da API Spring Boot
+  function converterFirestoreParaLocal(doc) {
+    var partesD = (doc.dataConsulta || '').split('-');
+    var partesH = (doc.horario || '').split(':');
+    var dtTimestamp = doc.dtConsultaTimestamp || null;
+    var dtLembrete = doc.dtLembrete48hTimestamp || null;
+    var dataFmt = doc.dataConsultaFormatada || doc.dataConsulta;
+
+    if (!dtTimestamp && partesD.length === 3 && partesH.length >= 2) {
+      var d = new Date(
+        parseInt(partesD[0], 10),
+        parseInt(partesD[1], 10) - 1,
+        parseInt(partesD[2], 10),
+        parseInt(partesH[0], 10),
+        parseInt(partesH[1], 10)
+      );
+      dtTimestamp = d.getTime();
+      dtLembrete = dtTimestamp - (48 * 60 * 60 * 1000);
+    }
+
+    return {
+      id: doc.id,
+      protocolo: doc.protocolo,
+      nome: doc.nome,
+      telefone: doc.telefone,
+      email: doc.email,
+      modalidade: doc.modalidade,
+      foco: doc.foco,
+      dataConsulta: doc.dataConsulta,
+      dataConsultaFormatada: dataFmt,
+      horario: doc.horario,
+      notas: doc.notas || '',
+      dtConsultaTimestamp: dtTimestamp,
+      dtLembrete48hTimestamp: dtLembrete,
+      status: doc.status || 'pendente_48h',
+      lembrete48hDisparado: doc.lembrete48hDisparado || false,
+      criadoEm: doc.criadoEm || doc.criadoEmIso || new Date().toISOString(),
+      confirmadoEm: doc.confirmadoEm,
+      concluidoEm: doc.concluidoEm,
+      canceladoEm: doc.canceladoEm,
+      reagendadoEm: doc.reagendadoEm,
+      lembreteDisparadoEm: doc.lembreteDisparadoEm
+    };
+  }
+
+  // Carrega agendamentos com sincronização em tempo real (Firestore ou Spring Boot)
   function carregarDoStorage() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -67,7 +115,20 @@
       agendamentos = [];
     }
 
-    // Tenta sincronizar com o backend Spring Boot em segundo plano
+    // 1. Prioridade Serverless: Google Cloud Firestore
+    if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+      atualizarBadgeBackend('firestore');
+      FirestoreService.escutarTodosAgendamentos(function(lista) {
+        if (Array.isArray(lista)) {
+          agendamentos = lista.map(converterFirestoreParaLocal);
+          salvarNoStorage();
+          atualizarInterface();
+        }
+      });
+      return;
+    }
+
+    // 2. Fallback para API Spring Boot (H2)
     sincronizarComBackend();
   }
 
@@ -490,7 +551,9 @@
       item.status = 'lembrete_enviado';
     }
 
-    if (isBackendOnline && typeof id === 'number') {
+    if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+      FirestoreService.registrarLembrete48h(id);
+    } else if (isBackendOnline && typeof id === 'number') {
       fetch(BACKEND_API_URL + '/agendamentos/' + id + '/lembrete', { method: 'POST' }).catch(console.warn);
     }
 
@@ -536,7 +599,9 @@
       exibirToast('Agendamento de ' + item.nome + ' cancelado.', 'warn');
     }
 
-    if (isBackendOnline && typeof id === 'number') {
+    if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+      FirestoreService.atualizarStatus(id, novoStatus);
+    } else if (isBackendOnline && typeof id === 'number') {
       var statusMap = {
         'confirmado': 'CONFIRMADO',
         'concluido': 'CONCLUIDO',
@@ -564,7 +629,9 @@
     var ok = confirm('Tem certeza que deseja excluir o registro de ' + item.nome + ' (' + item.protocolo + ')?');
     if (!ok) return;
 
-    if (isBackendOnline && typeof id === 'number') {
+    if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+      FirestoreService.excluir(id);
+    } else if (isBackendOnline && typeof id === 'number') {
       fetch(BACKEND_API_URL + '/agendamentos/' + id, { method: 'DELETE' }).catch(console.warn);
     }
 
@@ -637,6 +704,10 @@
       item.status = 'pendente_48h';
       item.lembrete48hDisparado = false;
       item.reagendadoEm = new Date().toISOString();
+
+      if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+        FirestoreService.reagendar(item.id, novaData, novaHora);
+      }
 
       salvarNoStorage();
       fecharModalReagendar();
@@ -722,6 +793,35 @@
         exibirToast('Novo agendamento criado com sucesso (' + novo.protocolo + ')!', 'success');
       }
 
+      // 1. Prioridade Serverless: Cloud Firestore (Firebase)
+      if (typeof FirestoreService !== 'undefined' && FirestoreService.isDisponivel()) {
+        var agendamentoObj = {
+          protocolo: '#PSI-' + randomCode,
+          nome: nome,
+          telefone: tel,
+          email: email || 'paciente@consultorio.com',
+          modalidade: mod,
+          foco: foco,
+          dataConsulta: data,
+          dataConsultaFormatada: diasSemanaPt[d.getDay()] + ', ' + d.getDate() + ' de ' + mesesPt[d.getMonth()] + ' de ' + d.getFullYear(),
+          horario: hora,
+          notas: notas,
+          dtConsultaTimestamp: d.getTime(),
+          dtLembrete48hTimestamp: d.getTime() - (48 * 60 * 60 * 1000)
+        };
+        FirestoreService.criarAgendamento(
+          agendamentoObj,
+          function(docId) {
+            persistirLocal(agendamentoObj.protocolo, docId);
+          },
+          function(erroMsg) {
+            alert(erroMsg || 'Horário já reservado no banco de dados. Escolha outro horário.');
+          }
+        );
+        return;
+      }
+
+      // 2. Fallback para API Spring Boot (H2)
       if (isBackendOnline && window.fetch) {
         var payload = {
           nome: nome,

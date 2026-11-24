@@ -1,0 +1,44 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": [
+    {
+      "site": "onflux-psicologo-v3",
+      "public": ".",
+      "cleanUrls": true,
+      "ignore": [
+        "firebase.json",
+        ".firebaserc",
+        "backend/**",
+        "**/.*",
+        "README.md",
+        "LICENSE",
+        "*.bat",
+        "*.ps1"
+      ]
+    },
+    {
+      "site": "onflux-psicologo-v3-painel",
+      "public": ".",
+      "cleanUrls": true,
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "/painel-agenda",
+          "type": 302
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        ".firebaserc",
+        "backend/**",
+        "**/.*",
+        "README.md",
+        "LICENSE",
+        "*.bat",
+        "*.ps1"
+      ]
+    }
+  ]
+}
